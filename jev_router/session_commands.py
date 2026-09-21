@@ -1,4 +1,4 @@
-"""CLI integration for opt-in task capsules and reported agent lifecycle events."""
+"""CLI integration for task capsules and reported agent lifecycle events."""
 
 from __future__ import annotations
 
@@ -36,6 +36,10 @@ def session_command(args: argparse.Namespace, settings: dict[str, Any]) -> dict[
         }
     if not args.session_id or not args.project:
         raise ValueError("Use session_id and project from the actual hook metadata")
+    if action in {"research", "message"}:
+        from .teamwork import plan_message, plan_research
+
+        return (plan_research if action == "research" else plan_message)(read_object())
     root = Path(settings["state_dir"])
     store = SessionStore(root, args.session_id, args.project)
     if action == "show":

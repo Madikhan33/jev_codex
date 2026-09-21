@@ -32,8 +32,18 @@ AGENT_INSTRUCTIONS = (
     "in the codebase: edit only your assigned files, preserve others' changes, and report "
     "ownership conflicts before editing shared files. Ask the parent for missing interfaces "
     "or prerequisites; continue independent assigned work while waiting. "
+    "When the lead supplies real peer IDs and a peer messaging tool is available, send "
+    "focused questions or findings directly to the responsible peer. Include task ID, "
+    "message kind, the concrete question or result and short evidence references. Copy "
+    "contract changes and blockers to the parent; only the parent may change ownership. "
+    "If direct messaging is unavailable, relay through the parent. Avoid broadcasts, "
+    "duplicate messages and acknowledgement loops. Ask the parent to resume idle peers. "
     "Use the supplied context and targeted file reads. Do not perform a full-repository "
     "scan, spawn subagents or call Jev again. Preserve sandbox and approval requirements. "
+    "For missing local facts inspect relevant files; for missing user choices ask the "
+    "parent. Verify needed current external facts with available research tools when "
+    "permitted, using public technical queries and primary sources. Stop when the gap "
+    "is resolved; share the concise finding so teammates do not repeat the search. "
     "Return task status (completed, blocked, or needs_review), changed files, actual "
     "validation results, interface changes and remaining blockers to the parent. "
     "Completion requires evidence for the assigned acceptance criteria; do not claim "
@@ -135,9 +145,8 @@ def agent_file(profile: str, row: Profile) -> bytes:
 
 def managed_outputs(home: Path, skills: Path, catalog: Catalog) -> dict[Path, bytes]:
     result = {
-        skills / "jev-router" / "SKILL.md": (
-            Path(__file__).parent / "resources" / "SKILL.md"
-        ).read_bytes()
+        skills / "jev-router" / name: (Path(__file__).parent / "resources" / name).read_bytes()
+        for name in ("SKILL.md", "team-workflow.md")
     }
     for profile, row in catalog["profiles"].items():
         result[home / "agents" / f"jev_{profile}.toml"] = agent_file(profile, row)
@@ -358,7 +367,8 @@ def install(home: Path, skills: Path, *, without_key: bool) -> None:
         print("WARNING:", warning)
 
     print(
-        "Jev Router sends submitted text to TypeSafe. Optional context mode also sends saved task summaries."
+        "Jev Router sends submitted text and saved task summaries to TypeSafe by default. "
+        "An explicit context_enabled=false setting is preserved."
     )
     print("Repository files and transcripts are not read or sent by the hook.")
     print("The parent model, permissions and hook trust remain unchanged.")
@@ -380,6 +390,7 @@ def install(home: Path, skills: Path, *, without_key: bool) -> None:
     if not settings_path.exists():
         settings = {
             "enabled": True,
+            "context_enabled": True,
             "catalog_dir": str(catalog_dir),
             "credential_file": str(root / "secrets.json"),
         }

@@ -55,7 +55,7 @@ def plan_assignment(
     Existing means the same task's assignment. Callers must not pass an unrelated
     task. Evidence is a lead's explicit report, not independently verified telemetry.
     """
-    reasons = validate_evidence(evidence or [])
+    reasons = validate_evidence([] if evidence is None else evidence)
     if not isinstance(available_agents, list) or any(
         not isinstance(agent, str) or not agent.strip() for agent in available_agents
     ):
@@ -95,8 +95,20 @@ def plan_assignment(
             raise ValueError("Unknown existing profile")
         if existing.get("agent_type") != f"jev_{old_profile}":
             raise ValueError("Existing agent does not match its profile")
+        unfinished = existing.get("status") in {"selected", "dispatch_accepted", "blocked"}
+        if owner != existing.get("owner"):
+            if unfinished:
+                result.update(
+                    status="ownership_change_blocked", previous_owner=existing.get("owner")
+                )
+                return result
+            # A stopped/completed assignment permits an explicit ownership transfer.
+            # It is a new selection, not retention of the previous worker.
+            existing = None
+    if existing:
+        old_profile = existing["profile"]
         stronger = catalog["profiles"][profile]["rank"] > catalog["profiles"][old_profile]["rank"]
-        active = existing.get("status") in {"dispatch_accepted", "blocked"}
+        active = existing.get("status") in {"selected", "dispatch_accepted", "blocked"}
         if not stronger or not reasons or active:
             profile = old_profile
             result.update(
@@ -112,6 +124,12 @@ def plan_assignment(
         result.update(status="unavailable", unavailable_agent_type=agent_type)
         return result
     configured = catalog["profiles"][profile]
+    if configured["family"] == "astra" and not result["retained"] and not reasons:
+        result.update(
+            status="needs_evidence",
+            escalation_blocked="Explain why Luna/Sol cannot satisfy the task's constraints",
+        )
+        return result
     result.update(
         profile=profile,
         agent_type=agent_type,

@@ -29,7 +29,19 @@ def build_parser() -> argparse.ArgumentParser:
     session = commands.add_parser("session", help="Task context and reported dispatch lifecycle")
     session.add_argument(
         "action",
-        choices=("enable", "disable", "show", "save", "clear", "route", "plan", "record", "trace"),
+        choices=(
+            "enable",
+            "disable",
+            "show",
+            "save",
+            "clear",
+            "route",
+            "plan",
+            "record",
+            "trace",
+            "research",
+            "message",
+        ),
     )
     session.add_argument("--session-id")
     session.add_argument("--project")

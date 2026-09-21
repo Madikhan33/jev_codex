@@ -21,7 +21,7 @@ def hook_result(
     transport_factory: Any = None,
     config_path: Path | None = None,
 ) -> dict[str, Any] | None:
-    """Route text and opt-in task capsules; never open transcripts or project files."""
+    """Route text and default-enabled task capsules; never open transcripts or project files."""
     if os.environ.get("JEV_ROUTER_DISABLE") == "1" or not settings.get("enabled", True):
         return None
     if event.get("hook_event_name") != "UserPromptSubmit":

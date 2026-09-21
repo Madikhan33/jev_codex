@@ -28,7 +28,7 @@ def read_settings(path: Path | None = None) -> dict[str, Any]:
     result.setdefault("enabled", True)
     if type(result["enabled"]) is not bool:
         raise ValueError("enabled must be a JSON boolean")
-    result.setdefault("context_enabled", False)
+    result.setdefault("context_enabled", True)
     if type(result["context_enabled"]) is not bool:
         raise ValueError("context_enabled must be a JSON boolean")
     result.setdefault("state_dir", str(target.parent / "sessions"))
