@@ -1,0 +1,20 @@
+[
+  {
+    "id": "mechanical_edit",
+    "prompt": "In an isolated copy, create a CSS fixture containing .primary { color: #111111; padding: 8px; } and .secondary { color: #111111; }. Then ask the worker to change only the primary color to #2563eb. Fixture creation is outside the timed worker trial.",
+    "acceptance": ["Primary color equals #2563eb", "Secondary color and primary padding remain unchanged", "No files outside the supplied CSS fixture changed"],
+    "measurement": "Run deterministic CSS assertions and diff checks; capture tool output and measure wall time from worker dispatch to completion including its checks."
+  },
+  {
+    "id": "ordinary_feature",
+    "prompt": "In a fresh isolated directory provide an empty Python module. Ask the worker to implement paginate(items, page=1, page_size=20) returning {items, total, page, page_size}. Use 1-based pages; page and page_size must be positive integers (reject booleans); pages beyond the end return an empty list; never mutate input. No external dependencies.",
+    "acceptance": ["25 inputs with page=2 and page_size=20 return the last 5 and total=25", "Empty input and beyond-end pages return empty lists", "Zero, negative, float and boolean pagination parameters raise ValueError", "Input list remains unchanged; defaults return the first 20"],
+    "measurement": "Use the same external acceptance tests for every profile. Capture each assertion result and the final diff."
+  },
+  {
+    "id": "concurrency_bug",
+    "prompt": "Provide this Python fixture before timing: class LatestLoader with value=None and async load(fetch): self.value = await fetch(); return self.value. Ask the worker to make latest-started request win without cancelling fetch calls. Older requests must not overwrite value after a newer request started, even if the newer request fails. Preserve exceptions for each caller and return its own fetch result. Use only the standard library.",
+    "acceptance": ["Two gated requests completed in reverse order leave value from the later-started request", "A newer failed request prevents an older in-flight success from changing value", "Each successful caller gets its own result", "Each failed caller receives its original exception", "Independent loader instances do not share ordering state; tests use Events rather than sleeps"],
+    "measurement": "Run deterministic asyncio.Event-controlled interleavings, capture outputs and diff; include worker validation time. Use a fresh fixture for each repetition."
+  }
+]
