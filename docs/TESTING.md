@@ -1,5 +1,20 @@
 # Validation status
 
+## Team orchestration update (2026-09-21)
+
+- 69 offline tests passed, including assignment with uncertain categories, null profiles,
+  coupled owners, rejected intent/coordination, and explanations that stay local.
+- Ruff lint/format, mypy (12 modules), and skill structural validation passed.
+- Independent read-only review covered five ownership/dependency/fallback scenarios.
+  Its compact-intent ambiguity finding was fixed and covered by a regression assertion.
+- Updated the local installation and verified source/runtime and skill byte equality.
+  Existing config, hook definition, settings, credentials and catalog bytes were preserved.
+  Doctor confirmed registration, integration integrity and configured key presence.
+- No new paid classification calls or fresh-session end-to-end team benchmark were run.
+  Restart Codex to reload the updated worker instructions before evaluating live behavior.
+
+## Earlier refactor baseline
+
 Checked on 2026-09-21, Windows, Python 3.12.4, TypeSafe SDK 0.7.0.
 
 ## Executed

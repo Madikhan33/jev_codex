@@ -17,7 +17,7 @@ A small style change and a feature spanning a UI and an API need different execu
 
 - **Automatic entry point.** A `UserPromptSubmit` hook routes normal prompts without requiring a skill name in every message.
 - **Task-aware profiles.** Fourteen work categories and seven model/effort presets, with criteria you can read and change.
-- **Useful delegation.** Related edits share an owner; independent deliverables can use separate subagents. Five candidate labels do not mean five agents.
+- **A coordinated team.** Codex leads the work, assigns bounded tasks to specialists, tracks dependencies and accepts their results. Related edits share an owner; five candidate labels do not mean five agents.
 - **Persistent setup.** One installer manages the runtime, skill, agents and hook. Save a key once or supply it through the environment.
 - **Visible uncertainty.** Ambiguous requests retain their uncertainty; provider failures produce a warning and let Codex continue.
 
@@ -114,8 +114,8 @@ flowchart LR
     C --> D[Jev: profiles for selected work]
     D --> E[Python: validate and group ownership]
     E --> F[Codex + jev-router skill]
-    F --> G[Parent owns one task]
-    F --> H[Scoped subagents when useful]
+    F --> G[Lead coordinates contracts and acceptance]
+    F --> H[Specialists own bounded tasks]
     G --> I[Integrate and verify]
     H --> I
 ```
@@ -123,9 +123,25 @@ flowchart LR
 1. **Detect work.** Jev answers 14 independent category questions and three control questions about intent, coordination and uncovered work.
 2. **Choose profiles.** A second call classifies only accepted categories. No accepted work means no second call.
 3. **Validate.** Python checks answer types, known labels, probabilities and thresholds. Related categories merge into ownership groups.
-4. **Execute.** The skill tells Codex to delegate substantial independent groups, pass concrete requirements and boundaries, respect concurrency, wait for results and verify integration.
+4. **Coordinate the team.** The skill makes the main Codex the team lead: define bounded tasks, assign ownership, resolve dependencies, delegate substantial work, and integrate and verify results.
 
 Categories use TypeSafe `Noul`; profiles use `Choice`. See the [complete generated classifier catalog](docs/PROMPTS.md) and the [execution skill](jev_router/resources/SKILL.md).
+
+### Who assigns the work?
+
+Jev recommends work categories, profiles and coordination. The main Codex uses those hints together with the repository and conversation to assign concrete jobs. It keeps a lightweight task record in the conversation: task, owner, dependencies, status and acceptance check. Workers return changes, checks and unresolved issues to the lead; they do not recursively create more agents.
+
+A single substantial design task can go to one specialist while the lead does useful independent integration or acceptance work. Small edits stay with the lead. Several independent tasks can run in parallel; shared contracts and dependencies must be resolved before parallel edits begin.
+
+| Route strategy | Intended execution |
+| --- | --- |
+| `single_agent` | Lead handles an explanation, non-software request or work whose groups all use `luna_low` |
+| `resolve_scope` | Lead establishes the task when no work group or accepted actionable intent is available |
+| `assign_specialist` | One nontrivial ownership group; consider a bounded specialist assignment |
+| `consider_delegation` | Multiple groups with accepted separable coordination; assign independent work |
+| `coordinate_team` | Multiple groups need coordination; resolve contracts and dependencies before parallel work |
+
+`review_required` asks Codex to check the routing recommendation; it does not by itself block execution or request an independent review of the finished work. An uncertain category does not block a clear task. If Jev returns an empty profile, the lead may choose a suitable available profile from local context and must identify that as its own choice. The compact route includes `coordination`, using `unclear` when its classification was not accepted. These are execution instructions, not a guarantee that a particular client can launch every configured model.
 
 ### Example: a feature across UI and API
 
@@ -138,7 +154,7 @@ An **illustrative expected route**, not a recorded provider result:
 | Background, cards panel and API binding | Interface | Sol / medium |
 | Create/list API | Server | Sol / medium |
 
-Codex establishes the API contract, handles one group, and delegates the other when tools and permissions allow. The color change stays with the interface owner. An explicit independent review remains independent.
+Codex establishes the API contract, assigns substantial work to bounded specialists while retaining useful coordination or integration work, and checks the combined result. Dependent tasks wait until their prerequisites are ready. The color change stays with the interface owner. An explicit independent review remains independent. This example describes intended behavior; it is not end-to-end live validation.
 
 | Preset family | Available effort levels |
 | --- | --- |
@@ -154,7 +170,7 @@ These are editable policy presets, not benchmark rankings. Uncertainty does not 
 | --- | --- |
 | Route submitted text | Automatic after installation, restart and hook trust, unless disabled/skipped/unavailable |
 | Create concrete subtasks | Codex uses the original request and project context |
-| Select a worker profile | Jev recommendation, validated against the local catalog |
+| Select a worker profile | Validated Jev recommendation, or an explicitly identified Codex choice when the recommendation is missing |
 | Spawn subagents | Codex follows the skill, subject to available tools, ownership and runtime limits |
 | Change the parent model | **Not implemented**; the hook adds context to the current turn |
 | Verify account model access | **Not implemented**; unsupported profiles require configuration |
