@@ -26,6 +26,16 @@ def build_parser() -> argparse.ArgumentParser:
     prompts.add_argument("--stage", choices=("detection", "profiles"), default="detection")
     prompts.add_argument("--category", action="append", default=[])
     prompts.add_argument("--config", type=Path)
+    session = commands.add_parser("session", help="Task context and reported dispatch lifecycle")
+    session.add_argument(
+        "action",
+        choices=("enable", "disable", "show", "save", "clear", "route", "plan", "record", "trace"),
+    )
+    session.add_argument("--session-id")
+    session.add_argument("--project")
+    session.add_argument("--turn-id")
+    session.add_argument("--expected-revision", type=int)
+    session.add_argument("--config", type=Path)
     commands.add_parser("install", add_help=False)
     commands.add_parser("uninstall", add_help=False)
     return parser
@@ -110,6 +120,11 @@ def main(argv: list[str] | None = None) -> int:
             return 0 if is_ready else 1
         if args.command == "prompts":
             return prompts_command(args, settings)
+        if args.command == "session":
+            from .session_commands import session_command
+
+            print_json(session_command(args, settings))
+            return 0
         return classify_command(args, settings)
     except Exception as error:
         # SDK exceptions may contain credentials or submitted text. Keep the

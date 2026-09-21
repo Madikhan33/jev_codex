@@ -4,6 +4,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -15,6 +16,7 @@ from jev_router.catalog import (
     validate_catalog,
 )
 from jev_router.hook import hook_result
+from jev_router.installer import agent_file
 from jev_router.routing import classify, compact_route, probability
 
 CATALOG = load_catalog()
@@ -58,6 +60,28 @@ class FakeAPI:
 
 
 class RoutingTests(unittest.TestCase):
+    def test_each_selected_profile_matches_registered_worker_model_and_effort(self):
+        # This checks the classifier -> group -> installed agent contract, not model access.
+        expected = {
+            "luna_low": ("gpt-5.6-luna", "low"),
+            "luna_medium": ("gpt-5.6-luna", "medium"),
+            "luna_high": ("gpt-5.6-luna", "high"),
+            "sol_medium": ("gpt-5.6-sol", "medium"),
+            "sol_high": ("gpt-5.6-sol", "high"),
+            "astra_low": ("gpt-6-astra", "low"),
+            "astra_medium": ("gpt-6-astra", "medium"),
+        }
+        for profile, (model, effort) in expected.items():
+            with self.subTest(profile=profile):
+                result = classify("Scoped work", FakeAPI({"ui_style": 0.99}, {"ui_style": profile}))
+                group = result["groups"][0]
+                worker = tomllib.loads(agent_file(profile, CATALOG["profiles"][profile]).decode())
+                self.assertEqual(group["agent_type"], worker["name"])
+                self.assertEqual((group["model"], group["effort"]), (model, effort))
+                self.assertEqual(
+                    (worker["model"], worker["model_reasoning_effort"]), (model, effort)
+                )
+
     def test_unclear_coordination_is_not_reported_as_resolved(self):
         result = classify(
             "Change UI and server",

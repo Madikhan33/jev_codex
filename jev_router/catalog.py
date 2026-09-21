@@ -72,6 +72,8 @@ def install_catalog(directory: Path) -> None:
         shutil.copyfile(DATA / "policy.toml", directory / "policy.toml")
     if not (directory / "routing.toml").exists():
         shutil.copyfile(PROMPTS / "routing.toml", directory / "routing.toml")
+    if not (directory / "context.toml").exists():
+        shutil.copyfile(PROMPTS / "context.toml", directory / "context.toml")
 
 
 def require_text(section: dict[str, Any], fields: tuple[str, ...], name: str) -> None:

@@ -170,7 +170,7 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("Someone''s folder", decoded)
         self.assertIn("'" + str(entry) + "'", decoded)
         self.assertNotIn("prompt", decoded)
-        self.assertEqual(h["timeout"], 16)
+        self.assertEqual(h["timeout"], 21)
 
     def test_dry_run_does_not_write_anything(self):
         home = self.base / "untouched"

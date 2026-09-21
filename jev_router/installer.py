@@ -112,7 +112,7 @@ def hook_definition(python: Path, entry: Path, settings: Path, timeout: float) -
         "type": "command",
         "command": shlex.join(argv),
         "commandWindows": "powershell.exe -NoProfile -NonInteractive -EncodedCommand " + encoded,
-        "timeout": math.ceil(2 * timeout + 6),
+        "timeout": math.ceil(3 * timeout + 6),
         "statusMessage": "Jev Router",
         "additionalContextLimit": 1800,
     }
@@ -175,7 +175,9 @@ def config_warnings(home: Path) -> list[str]:
             warnings.append(
                 f"{filename} disables subagents; this installer leaves that choice unchanged."
             )
-        if filename == "config.toml" and value.get("hooks"):
+        if filename == "config.toml" and any(
+            isinstance(groups, list) and groups for groups in value.get("hooks", {}).values()
+        ):
             warnings.append(
                 "Inline hooks also exist in config.toml. Review /hooks for duplicate routing hooks."
             )
@@ -355,7 +357,10 @@ def install(home: Path, skills: Path, *, without_key: bool) -> None:
     for warning in config_warnings(home):
         print("WARNING:", warning)
 
-    print("Jev Router sends submitted text to TypeSafe, not repository files or transcripts.")
+    print(
+        "Jev Router sends submitted text to TypeSafe. Optional context mode also sends saved task summaries."
+    )
+    print("Repository files and transcripts are not read or sent by the hook.")
     print("The parent model, permissions and hook trust remain unchanged.")
     has_environment_key = bool(os.environ.get("TYPESAFE_API_KEY", "").strip())
     has_saved_key = (root / "secrets.json").is_file()

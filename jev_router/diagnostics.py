@@ -30,6 +30,8 @@ def inspect_installation(
         "network_tested": False,
         "hook_trust": "Review in Codex with /hooks; not modified by this tool",
         "model_availability": "Not verified for this account",
+        "context_enabled": settings.get("context_enabled", False),
+        "context_source": "Explicit local task capsules; no transcript access",
     }
     try:
         get_api_key(settings)
