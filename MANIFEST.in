@@ -1,4 +1,8 @@
 include install.py run.py eval.py README.ru.md CONTRIBUTING.md SECURITY.md
-recursive-include docs *.md *.json *.toml
+recursive-include docs *.md
+recursive-include docs/assets *.svg
 recursive-include scripts *.py
 recursive-include tests *.py *.json
+prune .private
+prune .codex
+global-exclude *.log secrets.json .env .env.*

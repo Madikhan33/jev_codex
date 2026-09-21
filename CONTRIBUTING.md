@@ -37,6 +37,13 @@ Install development tools with `python -m pip install ".[dev]"`. Use
 `python scripts/benchmark.py` for local loading overhead and question sizes;
 these measurements exclude network latency and model quality.
 
-No automated release is configured. Follow [the launch checklist](docs/LAUNCH.md),
-enable security reporting, and run live Codex/TypeSafe checks before release.
-Do not describe a package as available from a registry before publication.
+Keep local experiment reports, terminal logs and session artifacts in `.private/`,
+which is excluded from Git and source distributions. Public fixtures must be synthetic
+or explicitly shareable. Before submitting, inspect `git diff --cached` for credentials,
+personal paths and private task content. Ignore rules do not remove existing Git history.
+
+No automated release is configured. Before release, run the checks above, build the
+package, inspect its contents, and test installation from a clean environment. Report
+live Codex/TypeSafe results separately from offline tests. Enable a private security
+reporting channel before accepting sensitive reports. Do not describe a package as
+available from a registry before publication.

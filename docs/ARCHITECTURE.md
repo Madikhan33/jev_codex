@@ -27,7 +27,7 @@ cli.py → hook.py → settings.py + catalog.py
 | `storage.py` | Atomic writes and hashes shared by settings and installation |
 | `contextual.py` | Classify relation to a fresh capsule before deciding whether to reuse its context |
 | `session_state.py` | Bounded session/project capsules, expiry, revision checks and reroute guard |
-| `session_commands.py` | Explicit context opt-in, capsule CLI, assignment planning and reported trace |
+| `session_commands.py` | Default context workflow, capsule CLI, assignment planning and reported trace |
 | `dispatch.py` | Available-profile recommendations, ownership transitions and bounded local journal |
 
 ## Problems addressed
@@ -76,7 +76,8 @@ Offline routing tests can validate strategy selection and metadata. They do not 
 
 ## Context-aware follow-ups
 
-Context mode is disabled by default and explicitly enabled with `run.py session enable`.
+Context is enabled by default. An explicit `context_enabled: false` is preserved.
+The skill maintains state without asking the user to enable a separate mode.
 The lead saves a bounded capsule from its conversation context before delegation and
 before its final answer. The hook never reads a transcript. It sends a fresh capsule
 and current prompt to a relation classifier, then uses the capsule for work classification

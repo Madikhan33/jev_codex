@@ -4,8 +4,8 @@ The integration intentionally sends the current user prompt to TypeSafe for
 classification. Only use it for content that may be sent to that service. There
 is no automatic personal-data or secret redaction, no offline Jev model, and no
 claim about TypeSafe retention policy. Repository contents, transcript paths,
-conversation transcripts and audio are not collected by this package. Opt-in context
-mode (`run.py session enable`, disabled by default) additionally sends a bounded task
+conversation transcripts and audio are not collected by this package. Context
+(enabled by default; disable with `run.py session disable`) additionally sends a bounded task
 summary maintained by the Codex lead. That summary can contain information learned
 from the conversation. Save only necessary task facts, never secrets or full messages.
 Disabling context stops external capsule use without deleting local state.

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="440" viewBox="0 0 1280 440" role="img" aria-labelledby="title desc">
+  <title id="title">Jev Router — One request. A coordinated team.</title>
+  <desc id="desc">A dark blue banner showing a request routed through Jev to scoped worker agents.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#101d35"/><stop offset="1" stop-color="#080e1b"/></linearGradient>
+    <linearGradient id="accent"><stop stop-color="#7ce9cc"/><stop offset="1" stop-color="#77baff"/></linearGradient>
+  </defs>
+  <rect width="1280" height="440" rx="24" fill="url(#bg)"/>
+  <g fill="none" stroke="#22334d" stroke-width="1">
+    <path d="M760 0v440M840 0v440M920 0v440M1000 0v440M1080 0v440M1160 0v440M1240 0v440M720 60h560M720 140h560M720 220h560M720 300h560M720 380h560"/>
+  </g>
+  <rect x="64" y="62" width="42" height="6" rx="3" fill="url(#accent)"/>
+  <text x="122" y="73" fill="#a9bed6" font-family="Segoe UI,Arial,sans-serif" font-size="15" letter-spacing="3">TASK ROUTING FOR CODEX</text>
+  <text x="60" y="162" fill="#f1f6ff" font-family="Segoe UI,Arial,sans-serif" font-size="72" font-weight="700" letter-spacing="-3">Jev Router</text>
+  <text x="64" y="224" fill="#dce7f6" font-family="Segoe UI,Arial,sans-serif" font-size="30">One request. A coordinated team.</text>
+  <text x="64" y="270" fill="#9aafca" font-family="Segoe UI,Arial,sans-serif" font-size="19">Context-aware routing · Scoped agents · Shared evidence</text>
+  <rect x="64" y="329" width="220" height="40" rx="20" fill="#162c3a" stroke="#315667"/>
+  <text x="86" y="355" fill="#92e5d2" font-family="Segoe UI,Arial,sans-serif" font-size="15">Open source / MIT licensed</text>
+  <g fill="none" stroke="url(#accent)" stroke-width="2">
+    <path d="M798 220h65M959 220h45v-104h68M1004 220h68M1004 220v104h68"/>
+  </g>
+  <rect x="735" y="193" width="64" height="54" rx="14" fill="#18283e" stroke="#526d8c"/>
+  <path d="m754 211 9 9-9 9m16 0h12" fill="none" stroke="#b8cde4" stroke-width="2"/>
+  <rect x="863" y="175" width="96" height="90" rx="22" fill="#163747" stroke="#78dec9" stroke-width="2"/>
+  <text x="886" y="230" fill="#a4f3df" font-family="Segoe UI,Arial,sans-serif" font-size="27" font-weight="700">JEV</text>
+  <g fill="#15263c" stroke="#466380">
+    <rect x="1072" y="87" width="132" height="58" rx="14"/>
+    <rect x="1072" y="191" width="132" height="58" rx="14"/>
+    <rect x="1072" y="295" width="132" height="58" rx="14"/>
+  </g>
+  <g fill="#dce7f6" font-family="Segoe UI,Arial,sans-serif" font-size="17" text-anchor="middle">
+    <text x="1138" y="123">Interface</text><text x="1138" y="227">Backend</text><text x="1138" y="331">Validation</text>
+  </g>
+  <text x="878" y="395" fill="#839bb9" font-family="Segoe UI,Arial,sans-serif" font-size="13">Illustrative workflow · Teams adapt to the task</text>
+</svg>

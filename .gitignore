@@ -14,3 +14,10 @@ secrets.json
 settings.local.json
 *.bak
 .DS_Store
+
+# Local development evidence and runtime state; never publish these.
+.private/
+.codex/
+*.log
+docs/*-live.json
+docs/unit-test-output.txt

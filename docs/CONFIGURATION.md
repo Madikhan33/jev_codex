@@ -40,7 +40,7 @@ py -3 run.py doctor
 
 Preserve/reconcile local changes before pulling; do not reset them to force an update.
 Use the same custom installation flags as before. Credentials and settings are retained;
-context mode remains opt-in. The default hook timeout is now 21 seconds, so the changed
+an explicit context disable setting is retained; absent settings default to enabled. The default hook timeout is now 21 seconds, so the changed
 hook definition can require renewed trust in `/hooks` after restarting Codex.
 
 Rerun the installer to update the copied runtime and integrations. Keep the same installation paths; uninstall before relocating. Installed catalog changes are preserved. Compare upstream `jev_router/prompts/` and `jev_router/data/policy.toml` with the installed catalog to adopt new criteria deliberately. Legacy installations without `routing.toml` use bundled controls; reinstall adds the file for editing.
@@ -68,13 +68,15 @@ combined probability reaches the category acceptance threshold; the precise acti
 remains unresolved and must be interpreted from the user's message.
 
 ```powershell
-py -3 run.py session enable
+# Optional: disable sending saved summaries
 py -3 run.py session disable
+# Restore the default later
+py -3 run.py session enable
 ```
 
 Add `--config /absolute/path/settings.json` for a custom installation. `context_enabled`
-defaults to JSON `false`; `state_dir` defaults to `sessions` beside the settings file.
-Enabling permits sending the current prompt and saved task capsule to TypeSafe. It does
+defaults to JSON `true`; `state_dir` defaults to `sessions` beside the settings file.
+The default workflow sends the current prompt and saved task capsule to TypeSafe. It does
 not read transcripts or create the initial capsule: the execution skill asks the lead
 to maintain one from the conversation, before delegation and its final answer.
 
