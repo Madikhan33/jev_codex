@@ -71,7 +71,7 @@ class ContextualTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         self.store = SessionStore(self.root / "state", "session", str(self.root / "project"))
         self.saved = self.store.update(0, capsule())
         self.catalog = load_catalog()
@@ -138,7 +138,8 @@ class ContextualTests(unittest.TestCase):
         payload = json.loads(result["hookSpecificOutput"]["additionalContext"].split("\n", 1)[1])
         self.assertEqual(payload["session"]["revision"], 1)
         self.assertEqual(
-            payload["session"]["runtime"]["config"], str(self.root / "custom-settings.json")
+            payload["session"]["runtime"]["config"],
+            str((self.root / "custom-settings.json").resolve()),
         )
         self.assertEqual(payload["context"]["relation"], "correct")
 

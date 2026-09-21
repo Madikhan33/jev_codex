@@ -16,7 +16,7 @@ class SessionCliTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         self.config = self.root / "settings.json"
         self.config.write_text(json.dumps({"enabled": True, "keep_me": 42}), encoding="utf-8")
         self.args = [

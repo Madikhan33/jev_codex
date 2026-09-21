@@ -182,7 +182,7 @@ class DispatchTests(unittest.TestCase):
 
     def test_journal_isolates_sessions_and_persists_ownership(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             first = DispatchJournal(root, "one", "project")
             first.record(self.event())
             first.record(self.event("dispatch_accepted", agent_id="agent1", tool_evidence="spawn"))
@@ -195,7 +195,7 @@ class DispatchTests(unittest.TestCase):
 
     def test_project_path_is_canonical_and_history_bounded(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             journal = DispatchJournal(root, "one", str(root / "project"))
             alias = DispatchJournal(root, "one", str(root / "child" / ".." / "project"))
             self.assertEqual(journal.path, alias.path)

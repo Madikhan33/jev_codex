@@ -29,7 +29,7 @@ class SessionStateTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         self.store = SessionStore(self.root / "state", "../session", str(self.root))
 
     def test_roundtrip_revision_and_isolation(self):

@@ -22,7 +22,9 @@ class FileLockTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.path = Path(self.temp.name) / "state.lock"
+        # macOS can expose the temporary root through /var -> /private/var.
+        # Exercise a real directory while retaining symlink refusal in file_lock.
+        self.path = Path(self.temp.name).resolve() / "state.lock"
 
     def holder(self, mode):
         process = subprocess.Popen(
