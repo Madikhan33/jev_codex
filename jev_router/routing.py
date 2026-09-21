@@ -148,15 +148,21 @@ def choose_strategy(
     intent: ChoiceDecision,
     coordination: ChoiceDecision,
     groups: list[OwnershipGroup],
-    review_required: bool,
 ) -> str:
-    if review_required:
+    """Separate assignment from concurrency; advisory uncertainty is not a global stop."""
+    if not intent["accepted"] or intent["value"] == "unclear":
         return "resolve_scope"
     if intent["value"] in {"explain", "non_software"}:
         return "single_agent"
-    if len(groups) > 1 and coordination["accepted"] and coordination["value"] == "separable":
-        return "consider_delegation"
-    return "single_agent"
+    if not groups:
+        return "resolve_scope"
+    if all(group["profile"] == "luna_low" for group in groups):
+        return "single_agent"
+    if len(groups) > 1:
+        if coordination["accepted"] and coordination["value"] == "separable":
+            return "consider_delegation"
+        return "coordinate_team"
+    return "assign_specialist"
 
 
 def summarize_usage(responses: list[dict[str, Any]]) -> Usage:
@@ -267,7 +273,7 @@ def classify(
         "uncovered_probability": uncovered,
         "has_uncovered_work": has_uncovered_work,
         "review_required": review_required,
-        "strategy": choose_strategy(intent, coordination, groups, review_required),
+        "strategy": choose_strategy(intent, coordination, groups),
         "capabilities_verified": False,
         "usage": summarize_usage(responses),
     }
@@ -277,8 +283,11 @@ def compact_route(result: RoutingResult) -> dict[str, Any]:
     """Expose validated labels only, never raw user input or provider instructions."""
     return {
         "v": 3,
-        "intent": result["intent"]["value"],
+        "intent": result["intent"]["value"] if result["intent"]["accepted"] else "unclear",
         "strategy": result["strategy"],
+        "coordination": (
+            result["coordination"]["value"] if result["coordination"]["accepted"] else "unclear"
+        ),
         "review_required": result["review_required"],
         "groups": result["groups"],
         "uncertain": [category["work_type"] for category in result["uncertain"]],

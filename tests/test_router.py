@@ -64,7 +64,7 @@ class RoutingTests(unittest.TestCase):
             FakeAPI({"ui_layout": 0.98, "backend_api": 0.98}, coordination="unclear"),
         )
         self.assertTrue(result["review_required"])
-        self.assertEqual(result["strategy"], "resolve_scope")
+        self.assertEqual(result["strategy"], "coordinate_team")
 
     def test_null_usage_remains_unknown_without_breaking_route(self):
         api = FakeAPI({"ui_style": 0.98})
@@ -76,7 +76,7 @@ class RoutingTests(unittest.TestCase):
 
         result = classify("Lighten background", without_usage)
         self.assertIsNone(result["usage"]["input_tokens"])
-        self.assertEqual(result["strategy"], "single_agent")
+        self.assertEqual(result["strategy"], "assign_specialist")
 
     def test_catalog_has_14_defined_categories(self):
         self.assertEqual(len(CATALOG["categories"]), 14)
@@ -124,7 +124,7 @@ class RoutingTests(unittest.TestCase):
         api = FakeAPI({"ui_style": 0.99, "backend_api": 0.51})
         result = classify("Maybe server too", api)
         self.assertTrue(result["review_required"])
-        self.assertEqual(result["strategy"], "resolve_scope")
+        self.assertEqual(result["strategy"], "assign_specialist")
         self.assertEqual(result["uncertain"][0]["work_type"], "backend_api")
 
     def test_missing_requirements_not_automatic_astra(self):
@@ -133,6 +133,91 @@ class RoutingTests(unittest.TestCase):
         )
         self.assertIsNone(result["groups"][0]["model"])
         self.assertTrue(result["review_required"])
+        self.assertEqual(result["strategy"], "assign_specialist")
+
+    def test_uncertain_layout_does_not_block_design_assignment(self):
+        result = classify(
+            "Redesign the panel; layout details are open",
+            FakeAPI({"ui_style": 0.99, "ui_layout": 0.5}),
+        )
+        self.assertEqual(result["strategy"], "assign_specialist")
+        self.assertEqual(result["groups"][0]["agent_type"], "jev_sol_medium")
+        self.assertTrue(result["review_required"])
+
+    def test_partial_profile_does_not_erase_other_owner(self):
+        result = classify(
+            "Build UI and API",
+            FakeAPI(
+                {"ui_style": 0.99, "backend_api": 0.99, "testing": 0.5},
+                {"ui_style": "needs_context"},
+                coordination="separable",
+            ),
+        )
+        groups = {group["owner"]: group for group in result["groups"]}
+        self.assertIsNone(groups["interface"]["profile"])
+        self.assertEqual(groups["server"]["profile"], "sol_medium")
+        self.assertEqual(result["strategy"], "consider_delegation")
+        self.assertTrue(result["review_required"])
+
+    def test_coupled_owners_need_coordination_not_parallel_permission(self):
+        result = classify(
+            "Wire form to the changing API",
+            FakeAPI({"frontend_api": 0.99, "backend_api": 0.99}, coordination="single"),
+        )
+        self.assertEqual(result["strategy"], "coordinate_team")
+        self.assertEqual(compact_route(result)["coordination"], "single")
+
+    def test_unclear_intent_does_not_authorize_assignment(self):
+        result = classify("This panel?", FakeAPI({"ui_style": 0.99}, intent="unclear"))
+        self.assertEqual(result["strategy"], "resolve_scope")
+
+    def test_unaccepted_intent_requires_scope_resolution(self):
+        api = FakeAPI({"ui_style": 0.99})
+
+        def low_confidence(state, questions):
+            response = api(state, questions)
+            if "intent" in questions:
+                response["answers"]["intent"] = choice(
+                    questions["intent"]["criteria"], "implement", 0.4
+                )
+            return response
+
+        result = classify("This panel", low_confidence)
+        self.assertEqual(result["strategy"], "resolve_scope")
+        self.assertEqual(compact_route(result)["intent"], "unclear")
+
+    def test_low_confidence_coordination_is_visible_to_lead(self):
+        api = FakeAPI({"ui_style": 0.99, "backend_api": 0.99})
+
+        def low_confidence(state, questions):
+            response = api(state, questions)
+            if "coordination" in questions:
+                response["answers"]["coordination"] = choice(
+                    questions["coordination"]["criteria"], "separable", 0.5
+                )
+            return response
+
+        result = classify("Change UI and API", low_confidence)
+        self.assertEqual(result["strategy"], "coordinate_team")
+        self.assertEqual(compact_route(result)["coordination"], "unclear")
+
+    def test_explanation_with_uncertainty_stays_local(self):
+        result = classify(
+            "Explain panel design", FakeAPI({"ui_style": 0.99, "ui_layout": 0.5}, intent="explain")
+        )
+        self.assertTrue(result["review_required"])
+        self.assertEqual(result["strategy"], "single_agent")
+
+    def test_multiple_mechanical_edits_do_not_need_team(self):
+        result = classify(
+            "Correct two known constants",
+            FakeAPI(
+                {"ui_style": 0.99, "backend_api": 0.99},
+                {"ui_style": "luna_low", "backend_api": "luna_low"},
+                coordination="separable",
+            ),
+        )
+        self.assertEqual(result["strategy"], "single_agent")
 
     def test_absent_work_skips_second_call(self):
         api = FakeAPI(intent="non_software")

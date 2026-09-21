@@ -27,11 +27,17 @@ from .storage import json_bytes as json_bytes
 
 OWNER = "jev-codex-router-v3"
 AGENT_INSTRUCTIONS = (
-    "Complete only the assigned work and preserve the original constraints. "
+    "Work as a specialist reporting to the parent team lead. Complete only the assigned "
+    "task and preserve its acceptance criteria and original constraints. You are not alone "
+    "in the codebase: edit only your assigned files, preserve others' changes, and report "
+    "ownership conflicts before editing shared files. Ask the parent for missing interfaces "
+    "or prerequisites; continue independent assigned work while waiting. "
     "Use the supplied context and targeted file reads. Do not perform a full-repository "
-    "scan or delegate again by default. Do not call Jev again. Preserve sandbox and approval "
-    "requirements. Validate the assigned change and report changed files, actual checks "
-    "and blockers briefly. No fabricated file paths, test results or model changes."
+    "scan, spawn subagents or call Jev again. Preserve sandbox and approval requirements. "
+    "Return task status (completed, blocked, or needs_review), changed files, actual "
+    "validation results, interface changes and remaining blockers to the parent. "
+    "Completion requires evidence for the assigned acceptance criteria; do not claim "
+    "unrun checks passed. No fabricated paths, test results or model changes."
 )
 ENTRY = """from pathlib import Path
 import sys
