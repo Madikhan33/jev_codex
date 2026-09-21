@@ -38,6 +38,13 @@ class SessionCliTests(unittest.TestCase):
             code = main(["session", action, *self.args, *(extra or [])])
         return code, json.loads(output.getvalue()) if output.getvalue() else None
 
+    def test_initial_capsule_needs_no_enable_command(self):
+        code, saved = self.run_command("save", capsule(), ["--expected-revision", "0"])
+        self.assertEqual(code, 0)
+        self.assertEqual(saved["revision"], 1)
+        self.assertTrue(self.run_command("show")[1]["fresh"])
+        self.assertEqual(json.loads(self.config.read_text())["keep_me"], 42)
+
     def test_enable_save_conflict_clear_disable_preserve_settings(self):
         self.assertEqual(self.run_command("enable")[0], 0)
         self.assertEqual(json.loads(self.config.read_text())["keep_me"], 42)
@@ -112,3 +119,31 @@ class SessionCliTests(unittest.TestCase):
             )
         self.assertEqual(len(api.calls), 2)
         self.assertIn("Fix save race", api.calls[0][0]["context"])
+
+    def test_research_and_message_need_no_context_opt_in_or_provider(self):
+        with patch("jev_router.sdk.JevTransport", side_effect=AssertionError("No API call")):
+            code, result = self.run_command(
+                "research",
+                {
+                    "question": "Which version supports this API?",
+                    "gap": "external",
+                    "web_available": True,
+                },
+            )
+            self.assertEqual(code, 0)
+            self.assertEqual(result["action"], "search_web")
+            code, result = self.run_command(
+                "message",
+                {
+                    "task_id": "one",
+                    "sender": "a",
+                    "recipient": "b",
+                    "kind": "result",
+                    "body": "Contract is in api.py",
+                    "roster": {"a": "running", "b": "running"},
+                    "peer_messaging": True,
+                },
+            )
+            self.assertEqual(code, 0)
+            self.assertFalse(result["delivered"])
+        self.assertFalse((self.root / "sessions").exists())

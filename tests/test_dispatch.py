@@ -77,7 +77,8 @@ class DispatchTests(unittest.TestCase):
         }
         for profile, mapping in expected.items():
             with self.subTest(profile=profile):
-                plan = self.plan(profile)
+                evidence = ["new_constraints:Established conflicting cross-system invariants"]
+                plan = self.plan(profile, evidence=evidence if profile.startswith("astra") else [])
                 self.assertEqual((plan["model"], plan["effort"]), mapping)
                 self.assertEqual(plan["agent_type"], f"jev_{profile}")
                 self.assertEqual(plan["status"], "recommendation")
@@ -89,6 +90,36 @@ class DispatchTests(unittest.TestCase):
         result = self.plan("astra_medium")
         self.assertEqual(result["status"], "unavailable")
         self.assertIsNone(result["model"])
+
+    def test_initial_astra_selection_needs_evidence_without_inventing_fallback(self):
+        result = self.plan("astra_low")
+        self.assertEqual(result["status"], "needs_evidence")
+        self.assertEqual(result["recommended_profile"], "astra_low")
+        self.assertIsNone(result["model"])
+        for invalid in (False, "", {}):
+            with self.subTest(evidence=invalid), self.assertRaises(ValueError):
+                self.plan("astra_low", evidence=invalid)
+
+    def test_selected_assignment_must_stop_before_replacement(self):
+        previous = dict(self.plan("luna_medium"), status="selected")
+        result = self.plan(
+            "sol_high",
+            existing=previous,
+            evidence=["failed_check:Reproduced a stale response overwriting edits"],
+        )
+        self.assertEqual(result["profile"], "luna_medium")
+        self.assertEqual(result["escalation_blocked"], "stop_existing_first")
+
+    def test_owner_transfer_is_explicit_and_requires_finished_assignment(self):
+        previous = dict(self.plan("sol_medium"), status="dispatch_accepted", owner="server")
+        result = self.plan("luna_medium", existing=previous)
+        self.assertEqual(result["status"], "ownership_change_blocked")
+        self.assertIsNone(result["model"])
+        previous["status"] = "stopped"
+        result = self.plan("luna_medium", existing=previous)
+        self.assertEqual(result["owner"], "interface")
+        self.assertEqual(result["profile"], "luna_medium")
+        self.assertFalse(result["retained"])
 
     def test_lead_selection_requires_provenance(self):
         group = {"owner": "interface", "profile": "sol_medium", "selection_source": "lead"}

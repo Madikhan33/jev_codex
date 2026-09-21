@@ -9,6 +9,17 @@ from jev_router.settings import get_api_key, read_settings
 
 
 class SettingsTests(unittest.TestCase):
+    def test_context_defaults_on_and_preserves_explicit_disable(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "settings.json"
+            self.assertTrue(read_settings(target)["context_enabled"])
+            target.write_text('{"enabled": true, "custom": 42}', encoding="utf-8")
+            self.assertTrue(read_settings(target)["context_enabled"])
+            target.write_text('{"context_enabled": false, "custom": 42}', encoding="utf-8")
+            result = read_settings(target)
+            self.assertFalse(result["context_enabled"])
+            self.assertEqual(result["custom"], 42)
+
     def test_bom_settings_and_persistent_key(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

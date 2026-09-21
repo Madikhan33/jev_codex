@@ -16,6 +16,17 @@ CATALOG = load_catalog()
 
 
 class InstallerTests(unittest.TestCase):
+    def test_conditional_workflow_is_installed_and_protected(self):
+        self.install()
+        path = self.skills / "jev-router" / "team-workflow.md"
+        self.assertEqual(
+            path.read_bytes(), (ROOT / "jev_router/resources/team-workflow.md").read_bytes()
+        )
+        path.write_text("User customized workflow", encoding="utf-8")
+        with self.assertRaises(ValueError):
+            self.install()
+        self.assertEqual(path.read_text(), "User customized workflow")
+
     def test_modified_posix_command_does_not_duplicate_windows_handler(self):
         self.install()
         path = self.home / "hooks.json"
