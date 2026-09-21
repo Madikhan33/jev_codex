@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jev-codex-router"
+version = "0.4.0"
+description = "Criterion-based Jev routing for Codex prompts and subagent profiles"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = ["typesafe-sdk>=0.7.0,<0.8"]
+
+[project.urls]
+Homepage = "https://github.com/Madikhan33/jev_codex"
+Issues = "https://github.com/Madikhan33/jev_codex/issues"
+Source = "https://github.com/Madikhan33/jev_codex"
+
+[project.scripts]
+jev-codex = "jev_router.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["jev_router*"]
+
+[tool.setuptools.package-data]
+jev_router = ["data/*.toml", "prompts/*.toml", "prompts/*.md", "resources/*.md"]
+
+[project.optional-dependencies]
+dev = ["ruff>=0.11", "mypy>=1.15", "build>=1.2"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+files = ["jev_router"]
+check_untyped_defs = true
+disallow_untyped_defs = true
+warn_unused_ignores = true
+
+[tool.ruff.lint.per-file-ignores]
+"install.py" = ["UP036"]
+"scripts/*.py" = ["E402"]

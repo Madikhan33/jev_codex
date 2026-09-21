@@ -1,0 +1,52 @@
+# Execution profiles: criteria are sent to Jev; model/effort configure Codex workers.
+# rank is merge order, not measured price or quality.
+version = "3.1"
+
+[profiles.luna_low]
+family = "luna"
+model = "gpt-5.6-luna"
+effort = "low"
+rank = 10
+criterion = "One exact mechanical edit with a directly checkable result: a color, typo or known setting. No design choice or established high-consequence risk."
+
+[profiles.luna_medium]
+family = "luna"
+model = "gpt-5.6-luna"
+effort = "medium"
+rank = 20
+criterion = "A bounded change following an existing pattern: one handler, component adaptation, test or binding to a fixed API. No unresolved cross-component tradeoff."
+
+[profiles.luna_high]
+family = "luna"
+model = "gpt-5.6-luna"
+effort = "high"
+rank = 30
+criterion = "A narrow, fully specified task with several interacting conditions that need careful checking. The solution space is established; no open-ended design or high-consequence operation."
+
+[profiles.sol_medium]
+family = "sol"
+model = "gpt-5.6-sol"
+effort = "medium"
+rank = 40
+criterion = "An ordinary feature with local design choices: a composed UI panel, CRUD API, conventional migration or multi-state integration. No hard system-wide constraint is established."
+
+[profiles.sol_high]
+family = "sol"
+model = "gpt-5.6-sol"
+effort = "high"
+rank = 50
+criterion = "Concrete difficult constraints: races, transactions, authorization boundaries, live data migration, backward compatibility or hard reproducible debugging. Evidence must come from requirements, not urgency or labels."
+
+[profiles.astra_low]
+family = "astra"
+model = "gpt-6-astra"
+effort = "low"
+rank = 60
+criterion = "One bounded expert decision about an established hard invariant or conflicting technical alternatives, or an unresolved blocker after adequate lower-profile attempts. Missing requirements or credentials do not qualify."
+
+[profiles.astra_medium]
+family = "astra"
+model = "gpt-6-astra"
+effort = "medium"
+rank = 70
+criterion = "An established hard problem requiring several nonlocal decisions across subsystems, or a demonstrated systemic blocker after adequate lower-profile attempts. Ordinary UI-plus-backend work does not qualify."

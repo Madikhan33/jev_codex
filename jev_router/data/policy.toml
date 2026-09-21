@@ -1,0 +1,11 @@
+[policy]
+# Starting thresholds. Calibrate against your own labeled requests.
+yes_threshold = 0.80
+no_threshold = 0.20
+profile_threshold = 0.65
+profile_margin = 0.10
+top_k = 5
+max_prompt_chars = 40000
+max_context_chars = 6000
+request_timeout_seconds = 5.0
+jev_model = "jev-latest"
