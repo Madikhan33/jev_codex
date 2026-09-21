@@ -1,0 +1,24 @@
+[
+  {
+    "task_id": "ordinary_feature",
+    "profile": "luna_medium",
+    "status": "completed",
+    "checks_passed": true,
+    "elapsed_ms": 55646.577880859375,
+    "tool_evidence": "Actual luna_medium role returned implementation; parent independently ran 19 pagination acceptance checks. Wall time from before dispatch to worker-reported timestamp after its validation; single trial includes scheduling overhead.",
+    "repetition": 1,
+    "tokens": null,
+    "cost": null
+  },
+  {
+    "task_id": "ordinary_feature",
+    "profile": "sol_medium",
+    "status": "completed",
+    "checks_passed": true,
+    "elapsed_ms": 90685.6611328125,
+    "tool_evidence": "Actual sol_medium role returned implementation; parent independently ran 19 pagination acceptance checks. Wall time from before dispatch to worker-reported timestamp after its validation; single trial includes scheduling overhead.",
+    "repetition": 1,
+    "tokens": null,
+    "cost": null
+  }
+]

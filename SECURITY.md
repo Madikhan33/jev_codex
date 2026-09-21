@@ -4,7 +4,18 @@ The integration intentionally sends the current user prompt to TypeSafe for
 classification. Only use it for content that may be sent to that service. There
 is no automatic personal-data or secret redaction, no offline Jev model, and no
 claim about TypeSafe retention policy. Repository contents, transcript paths,
-conversation history and audio are not collected by this package.
+conversation transcripts and audio are not collected by this package. Opt-in context
+mode (`run.py session enable`, disabled by default) additionally sends a bounded task
+summary maintained by the Codex lead. That summary can contain information learned
+from the conversation. Save only necessary task facts, never secrets or full messages.
+Disabling context stops external capsule use without deleting local state.
+
+Capsules are partitioned by session and canonical project path, updated atomically with
+revision checks, and expire for routing after 24 hours. Local files are not encrypted.
+The dispatch journal contains bounded caller-reported evidence; it is not independently
+verified provider telemetry. Do not put credentials in tool evidence or verification
+descriptions. Session commands refuse symlink/junction storage paths. Clearing a capsule
+creates a cancellation tombstone; it does not cancel running agents or erase the journal.
 
 An optional key is stored in a local plaintext file only after the installer
 explains that behavior and the user enters it. Environment-variable credentials

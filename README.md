@@ -20,6 +20,7 @@ A small style change and a feature spanning a UI and an API need different execu
 - **A coordinated team.** Codex leads the work, assigns bounded tasks to specialists, tracks dependencies and accepts their results. Related edits share an owner; five candidate labels do not mean five agents.
 - **Persistent setup.** One installer manages the runtime, skill, agents and hook. Save a key once or supply it through the environment.
 - **Visible uncertainty.** Ambiguous requests retain their uncertainty; provider failures produce a warning and let Codex continue.
+- **Optional follow-up context.** A small session task summary helps interpret “fix this” while preserving constraints, completed work and ownership. Dispatch records distinguish recommendations from reported tool outcomes.
 
 The goal is better allocation of work. This release makes **no measured cost, speed or accuracy claim**.
 
@@ -81,6 +82,30 @@ uvx --from git+https://github.com/Madikhan33/jev_codex.git jev-codex install
 ```
 
 This is a Git-source install, not a claim that a PyPI package exists. Until the code is pushed, use the downloaded checkout. For a reproducible release, use a published tag or commit after `.git@` instead of following the default branch.
+
+### Update an existing installation
+
+Ask Codex: “Update my installed Jev Router from this repository. Find the source checkout, preserve local edits, fetch updates, run install.py --without-key and run.py doctor. Preserve my key and settings.” In a clean source checkout you can also run:
+
+```powershell
+git pull --ff-only
+py -3 install.py --without-key
+py -3 run.py doctor
+```
+
+Restart Codex afterward. Review `/hooks` if the updated definition needs trust again. This revision allows a 21-second hook timeout with the default policy. Updates preserve existing credentials, settings and edited catalog files; they do not enable context mode automatically.
+
+### Understand short follow-ups
+
+Enable context mode explicitly from the source directory:
+
+```powershell
+py -3 run.py session enable
+```
+
+The Codex lead maintains a bounded task summary per session and project, including constraints, remaining work and fact provenance. With a fresh summary, Jev first classifies whether the message continues, corrects, narrows, approves, cancels, questions or replaces that task. A new task does not reuse old context for work classification. The lead still resolves ambiguity and saves updated state before its final response; this is not transcript ingestion.
+
+**Privacy and calls:** enabled mode sends the current prompt **and saved task summary** to TypeSafe. It is off by default. A hook uses up to three logical calls instead of two; an optional explicit reroute after context repair allows up to two additional calls, once per turn. Cancellation classification asks the lead to stop actual workers; it does not stop them itself. Turn it off with `py -3 run.py session disable`. [Context configuration and trace →](docs/CONFIGURATION.md#context-and-dispatch)
 
 ## API key: set it once
 
@@ -176,7 +201,7 @@ These are editable policy presets, not benchmark rankings. Uncertainty does not 
 | Verify account model access | **Not implemented**; unsupported profiles require configuration |
 | Handle Jev outage | Warn and continue using normal Codex behavior |
 
-The hook sends the **current prompt text** to TypeSafe. It does not collect your repository, conversation transcript, attachments or audio. There is no automatic secret redaction. Short follow-ups may need the context already held by Codex. Oversized input is skipped rather than truncated. Common Codex control commands are skipped.
+By default the hook sends the **current prompt text** to TypeSafe. Opt-in context mode also sends the lead-maintained task summary. It does not collect your repository, conversation transcript, attachments or audio. There is no automatic secret redaction. Oversized input is skipped rather than truncated. Common Codex control commands are skipped. `session plan` and the local dispatch journal help the lead select and track workers; neither launches agents nor verifies the actual backend model. The parent model remains unchanged.
 
 ## Inspect, customize, remove
 

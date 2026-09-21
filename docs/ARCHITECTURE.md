@@ -25,6 +25,10 @@ cli.py → hook.py → settings.py + catalog.py
 | `diagnostics.py` | Local readiness checks without a provider request |
 | `installer.py` | Preflight, runtime staging, registration, rollback and selective uninstall |
 | `storage.py` | Atomic writes and hashes shared by settings and installation |
+| `contextual.py` | Classify relation to a fresh capsule before deciding whether to reuse its context |
+| `session_state.py` | Bounded session/project capsules, expiry, revision checks and reroute guard |
+| `session_commands.py` | Explicit context opt-in, capsule CLI, assignment planning and reported trace |
+| `dispatch.py` | Available-profile recommendations, ownership transitions and bounded local journal |
 
 ## Problems addressed
 
@@ -69,3 +73,27 @@ A single specialist is useful when the assignment is substantial and the lead ha
 When a profile is missing, the lead resolves it from local context and available profiles and labels the choice as its own. Neither the hook nor the classifier verifies account model access or changes the parent model. Runtime tools, available profiles and concurrency limits determine which assignments can actually run; unavailable delegation must be reported honestly.
 
 Offline routing tests can validate strategy selection and metadata. They do not establish live classification accuracy, actual model availability, or end-to-end team behavior in Codex.
+
+## Context-aware follow-ups
+
+Context mode is disabled by default and explicitly enabled with `run.py session enable`.
+The lead saves a bounded capsule from its conversation context before delegation and
+before its final answer. The hook never reads a transcript. It sends a fresh capsule
+and current prompt to a relation classifier, then uses the capsule for work classification
+only on continuation/correction/narrowing/approval/question. New-task and uncertain
+relations exclude it; cancellation returns advice for the lead without spawning or
+stopping workers. Completed state can explain corrections without becoming pending work.
+
+The baseline pipeline has at most two logical calls. Fresh-context routing adds one;
+an explicit lead reroute after resolving context is separately limited to once per turn
+and at most two calls. The default hook timeout is 21 seconds. Capsules have a 24-hour
+routing lifetime, a 6000-character limit, canonical session/project isolation and
+compare-and-swap revisions. User/observed/assumption fact labels retain provenance.
+
+The dispatch planner maps an available profile to configured model/effort, preserving
+existing ownership for related work and requiring concrete reported evidence to escalate.
+The lead makes the actual tool call. The journal validates reported lifecycle transitions;
+it cannot establish backend model identity or independently validate reported evidence.
+Null recommendations remain distinct from explicitly justified lead choices. The parent
+model is unchanged. Comparative execution trials are separate from classifier fixtures;
+the comparison tooling alone is not an executed model-quality benchmark.

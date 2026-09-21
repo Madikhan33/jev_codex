@@ -1,5 +1,34 @@
 # Validation status
 
+## Persistent context and dispatch (0.5.0)
+
+- 123 tests ran successfully: 122 passed; one symlink-creation test was skipped
+  because Windows did not grant the required privilege.
+- Coverage includes session/project isolation, revision conflicts across processes,
+  expiry, per-turn reroute limits, crash-released OS locks, dispatch lifecycle,
+  profile retention, custom config propagation and relation ambiguity.
+- The new live context-flow sample matched expected profiles in 5/6 cases with no
+  transport failures. Client optimistic-save routing remains unresolved; use the
+  explicit lead-selection fallback. This is a small development sample, not a
+  held-out accuracy estimate. See `context-flow-live.json`; the initial 3/6 run and
+  its prompt are preserved as `context-flow-baseline.json`/`.toml`.
+- Actual `jev_luna_medium` and `jev_sol_medium` workers each implemented the same
+  isolated pagination task. Both passed 19 independent pagination checks. See
+  `worker-trials.json` and `worker-comparison.json`. One trial per profile, unknown
+  cost/tokens, and no provider model telemetry: no general winner is established.
+- Task capsule extraction remains the lead's skill-driven responsibility. The hook
+  does not read transcripts; no claim that every client will execute the workflow
+  correctly follows from the offline tests or these bounded live trials.
+
+## Context evaluation (2026-09-21)
+
+81 offline tests pass, including all seven profile-to-installed-agent model/effort
+contracts and evaluator failure/abstention handling. These do not prove model access.
+The new 24-case context suite and a bounded live eight-case sample are documented in
+[context routing proposals and evidence](CONTEXT_ROADMAP.md). The frozen fixture and
+raw report are retained there; two strict mismatches have ambiguous original labels.
+No claim of general model-selection accuracy follows from this sample.
+
 ## Team orchestration update (2026-09-21)
 
 - 69 offline tests passed, including assignment with uncertain categories, null profiles,

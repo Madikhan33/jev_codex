@@ -1,0 +1,204 @@
+{
+  "utc": "2026-09-21T18:46:31.062532+00:00",
+  "sdk_version": "0.7.0",
+  "fixture_sha256": "84de60b465f0d7b91fbf23e6642456636f5f7798aa0f659b258e94fde310d8e4",
+  "context_prompt_sha256": "309458661e0efde60ac6aab2ba18753bff79c52781d8ad8b0883f4c9e1f6d580",
+  "model": "jev-latest",
+  "context_source": "synthetic explicit snapshots, not automatic transcript extraction",
+  "cases": [
+    {
+      "id": "same_fix_exact_color",
+      "relation": "related_unspecified",
+      "context_used": true,
+      "route": {
+        "v": 3,
+        "intent": "implement",
+        "strategy": "single_agent",
+        "coordination": "single",
+        "review_required": false,
+        "groups": [
+          {
+            "owner": "interface",
+            "work_types": [
+              "ui_style"
+            ],
+            "profile": "luna_low",
+            "agent_type": "jev_luna_low",
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          }
+        ],
+        "uncertain": [],
+        "uncovered": false,
+        "capabilities_verified": false
+      },
+      "profiles": {
+        "ui_style": "luna_low"
+      },
+      "profile_expectations_match": true,
+      "error_type": null,
+      "elapsed_ms": 2198.22
+    },
+    {
+      "id": "same_fix_component",
+      "relation": "continue",
+      "context_used": true,
+      "route": {
+        "v": 3,
+        "intent": "implement",
+        "strategy": "assign_specialist",
+        "coordination": "single",
+        "review_required": false,
+        "groups": [
+          {
+            "owner": "interface",
+            "work_types": [
+              "ui_layout"
+            ],
+            "profile": "sol_medium",
+            "agent_type": "jev_sol_medium",
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          }
+        ],
+        "uncertain": [],
+        "uncovered": false,
+        "capabilities_verified": false
+      },
+      "profiles": {
+        "ui_layout": "sol_medium"
+      },
+      "profile_expectations_match": true,
+      "error_type": null,
+      "elapsed_ms": 1203.56
+    },
+    {
+      "id": "same_fix_transaction",
+      "relation": "continue",
+      "context_used": true,
+      "route": {
+        "v": 3,
+        "intent": "implement",
+        "strategy": "assign_specialist",
+        "coordination": "single",
+        "review_required": false,
+        "groups": [
+          {
+            "owner": "server",
+            "work_types": [
+              "database",
+              "backend_logic"
+            ],
+            "profile": "sol_high",
+            "agent_type": "jev_sol_high",
+            "model": "gpt-5.6-sol",
+            "effort": "high"
+          }
+        ],
+        "uncertain": [],
+        "uncovered": false,
+        "capabilities_verified": false
+      },
+      "profiles": {
+        "database": "sol_high",
+        "backend_logic": "sol_high"
+      },
+      "profile_expectations_match": true,
+      "error_type": null,
+      "elapsed_ms": 1277.04
+    },
+    {
+      "id": "same_do_client_race",
+      "relation": "continue",
+      "context_used": true,
+      "route": {
+        "v": 3,
+        "intent": "implement",
+        "strategy": "resolve_scope",
+        "coordination": "single",
+        "review_required": true,
+        "groups": [],
+        "uncertain": [
+          "frontend_logic",
+          "frontend_api"
+        ],
+        "uncovered": false,
+        "capabilities_verified": false
+      },
+      "profiles": {},
+      "profile_expectations_match": false,
+      "error_type": null,
+      "elapsed_ms": 778.6
+    },
+    {
+      "id": "correction_layout_forbidden",
+      "relation": "correct",
+      "context_used": true,
+      "route": {
+        "v": 3,
+        "intent": "implement",
+        "strategy": "single_agent",
+        "coordination": "single",
+        "review_required": false,
+        "groups": [
+          {
+            "owner": "interface",
+            "work_types": [
+              "ui_style"
+            ],
+            "profile": "luna_low",
+            "agent_type": "jev_luna_low",
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          }
+        ],
+        "uncertain": [],
+        "uncovered": false,
+        "capabilities_verified": false
+      },
+      "profiles": {
+        "ui_style": "luna_low"
+      },
+      "profile_expectations_match": true,
+      "error_type": null,
+      "elapsed_ms": 1183.39
+    },
+    {
+      "id": "new_task_after_hard_task",
+      "relation": "new_task",
+      "context_used": false,
+      "route": {
+        "v": 3,
+        "intent": "implement",
+        "strategy": "single_agent",
+        "coordination": "single",
+        "review_required": true,
+        "groups": [
+          {
+            "owner": "documentation",
+            "work_types": [
+              "documentation"
+            ],
+            "profile": "luna_low",
+            "agent_type": "jev_luna_low",
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          }
+        ],
+        "uncertain": [
+          "tooling"
+        ],
+        "uncovered": false,
+        "capabilities_verified": false
+      },
+      "profiles": {
+        "documentation": "luna_low"
+      },
+      "profile_expectations_match": true,
+      "error_type": null,
+      "elapsed_ms": 1156.56
+    }
+  ],
+  "parent_model_changed": false,
+  "model_execution_measured": false
+}
