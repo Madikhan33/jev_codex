@@ -150,7 +150,7 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual([call[0]["context"] for call in api.calls], [case["context"]] * 2)
         self.assertEqual(report["strategy_accuracy"], 1)
         self.assertEqual(report["review_accuracy"], 1)
-        self.assertEqual(report["details"][0]["route"]["groups"][0]["model"], "gpt-5.6-luna")
+        self.assertEqual(report["details"][0]["route"]["groups"][0]["model"], "gpt-6-luna")
         self.assertFalse(report["codex_spawn_measured"])
         self.assertFalse(report["automatic_context_recovery_measured"])
 

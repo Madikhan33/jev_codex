@@ -37,8 +37,8 @@ Credentials, settings and edited catalog files are preserved; explicit context d
 preserved; missing context settings default to enabled.
 
 **Classifier prompts need attention:** reinstalling preserves edited catalog files.
-The unchanged older `profiles.toml` is migrated automatically to Luna xhigh/max,
-Sol medium/high/xhigh and Astra low/medium. A customized older file is kept and must
+The unchanged older `profiles.toml` is migrated automatically to Luna xhigh/max and
+Sol medium/high/xhigh. A customized older file is kept and must
 be reconciled with those allowed efforts before installation can finish. Other new
 criteria in `jev_router/prompts/` do not overwrite existing files. Back up
 `~/.codex/jev-router/catalog` (Windows: `%USERPROFILE%\.codex\jev-router\catalog`),

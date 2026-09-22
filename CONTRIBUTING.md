@@ -13,8 +13,9 @@ Profile criteria and IDs live in `jev_router/prompts/profiles.toml`; shared rule
 and control questions live in `jev_router/prompts/routing.toml`. Thresholds live
 in `jev_router/data/policy.toml`.
 Policy ordering does not establish model quality or price. Include real evaluation
-evidence before claiming an accuracy, speed or cost improvement. Astra effort
-remains limited to low/medium in this preset.
+evidence before claiming an accuracy, speed or cost improvement. Sol xhigh is the top
+expert escalation profile and requires concrete evidence of an invariant conflict,
+failed check or blocker.
 
 ```sh
 python -m unittest discover -s tests -v

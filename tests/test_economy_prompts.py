@@ -33,8 +33,6 @@ class EconomyPromptTests(unittest.TestCase):
                 "sol_medium",
                 "sol_high",
                 "sol_xhigh",
-                "astra_low",
-                "astra_medium",
                 None,
             }
             <= expected

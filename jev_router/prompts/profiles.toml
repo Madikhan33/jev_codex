@@ -4,49 +4,35 @@ version = "3.2"
 
 [profiles.luna_xhigh]
 family = "luna"
-model = "gpt-5.6-luna"
+model = "gpt-6-luna"
 effort = "xhigh"
 rank = 10
 criterion = "Default Luna worker for specified mechanical changes, bounded implementation, tests, documentation edits or local investigation following an established pattern. Use even for one small edit when implementation is delegated. Keep scope concrete and verify the result. If hard interacting conditions or a proven blocker remain, use a higher profile."
 
 [profiles.luna_max]
 family = "luna"
-model = "gpt-5.6-luna"
+model = "gpt-6-luna"
 effort = "max"
 rank = 20
 criterion = "Bounded work with several specified, interacting conditions in an established solution pattern: validation truth tables, local state transitions or precise parser edge cases. The scope is narrow but requires sustained reasoning; do not use for new architecture or high-consequence decisions."
 
 [profiles.sol_medium]
 family = "sol"
-model = "gpt-5.6-sol"
+model = "gpt-6-sol"
 effort = "medium"
 rank = 40
 criterion = "Ordinary feature or investigation needing local design choices across related parts: compose a responsive panel, design conventional CRUD, make a standard migration or integrate a fetch/save flow. Complexity alone is insufficient for Sol high; no established hard invariant."
 
 [profiles.sol_high]
 family = "sol"
-model = "gpt-5.6-sol"
+model = "gpt-6-sol"
 effort = "high"
 rank = 50
 criterion = "Established difficult constraint needing careful design or debugging: reproduced race, transaction integrity, authorization boundary, live-data safety or explicit compatibility invariant. A named technology, sensitive domain, urgent wording or vague complaint alone does not qualify."
 
 [profiles.sol_xhigh]
 family = "sol"
-model = "gpt-5.6-sol"
+model = "gpt-6-sol"
 effort = "xhigh"
 rank = 55
-criterion = "Several evidenced hard constraints interact across a bounded feature or investigation, and Sol high has not resolved the conflict. Use for deep debugging or design with concrete traces and invariants; do not select merely for broad scope, urgency or missing requirements."
-
-[profiles.astra_low]
-family = "astra"
-model = "gpt-6-astra"
-effort = "low"
-rank = 60
-criterion = "One bounded expert decision where evidenced hard invariants conflict or adequate lower-profile work exposed a technical blocker: assess two protocols against safety and recovery traces. Do not select for routine difficult coding, missing requirements, access or credentials."
-
-[profiles.astra_medium]
-family = "astra"
-model = "gpt-6-astra"
-effort = "medium"
-rank = 70
-criterion = "Several coupled, nonlocal expert decisions across subsystems with explicit invariants and failure evidence, or a demonstrated systemic blocker after adequate lower-profile attempts. Cross-file or UI-plus-backend scope by itself does not qualify."
+criterion = "Top expert escalation for one or more evidenced hard invariant conflicts, or a demonstrated systemic blocker after adequate lower-profile attempts. Require nonempty concrete evidence such as an invariant conflict, failed check or blocker; do not select for routine difficult coding, missing requirements, access, urgency or broad scope alone."

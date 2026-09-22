@@ -90,12 +90,14 @@ For a null profile, keep Jev's recommendation and identify any choice as the lea
 decision. `luna_xhigh` fits specified mechanical changes and bounded established
 patterns; `luna_max` fits narrow specified work with interacting conditions;
 `sol_medium` fits ordinary features or design choices; `sol_high` fits evidenced hard
-debugging, compatibility or transaction constraints; `sol_xhigh` fits interacting hard
-constraints that remain unresolved at Sol high. Use the smallest sufficient Luna or Sol
-profile, reuse a worker for related follow-ups, and require concrete evidence before
-Astra. Mere uncertainty is not enough.
-An initial Astra plan must include nonempty `validate_evidence` reasons; never silently
-fall back. If difficulty remains unknown, start with a bounded read-only investigation.
+debugging, compatibility or transaction constraints; `sol_xhigh` is the top expert
+escalation for invariant conflicts or systemic blockers that remain unresolved after
+adequate lower-profile attempts. Use the smallest sufficient Luna or Sol profile,
+reuse a worker for related follow-ups, and require nonempty concrete evidence before
+Sol xhigh. Mere uncertainty is not enough.
+An initial Sol xhigh plan must include nonempty `validate_evidence` reasons; never
+silently fall back. If difficulty remains unknown, start with a bounded read-only
+investigation.
 Never claim measured token savings; these are selection heuristics.
 
 If a profile is unavailable, report the limitation and use an appropriate available

@@ -25,7 +25,7 @@ an execution profile and gives the lead agent a workflow for assigning and check
 | **Automatic routing** | A `UserPromptSubmit` hook classifies requests with Jev by TypeSafe. |
 | **Context for follow-ups** | Task summaries maintained by the skill help interpret “fix this” without importing the entire conversation. |
 | **Scoped delegation** | Every confirmed software change, including a small edit, goes to at least one scoped worker; the lead checks and integrates the result. |
-| **Luna / Sol first** | Editable criteria prefer the smallest sufficient profile; a new Astra assignment needs explicit evidence in the planner. |
+| **Luna / Sol profiles** | Editable criteria prefer the smallest sufficient profile; Sol xhigh requires concrete escalation evidence in the planner. |
 | **Research when needed** | The skill guides Codex to project files, public sources or a user clarification, depending on the missing fact. |
 | **Peer coordination** | Workers exchange focused questions and findings using available host tools, with a lead-relay fallback. |
 
@@ -79,7 +79,7 @@ python3 run.py doctor
 ```
 
 The installer creates a private Python environment, installs the SDK, registers the
-skill, creates seven agent profiles, merges the hook and prepends a removable Jev rule
+skill, creates five agent profiles, merges the hook and prepends a removable Jev rule
 to your global `~/.codex/AGENTS.md`. Existing instructions and settings are preserved.
 Restart Codex and review `/hooks` after installation. The global rule asks Codex to
 use the skill for software edits even when the hook produces no route.
@@ -132,8 +132,7 @@ is available. This is an illustration, not a fixed team or guaranteed classifier
 | Profile family | Intended use | Effort presets |
 | --- | --- | --- |
 | **Luna** | Specified changes and bounded work following known patterns | xhigh, max |
-| **Sol** | Local design choices and evidenced difficult implementation constraints | medium, high, xhigh |
-| **Astra** | Established expert decisions or technical blockers requiring escalation | low, medium |
+| **Sol** | Local design choices, difficult constraints and evidenced expert escalation | medium, high, xhigh |
 
 Profiles are configurable policy presets, not benchmark rankings. A vague prompt or
 urgent wording is not evidence for escalation. [Team workflow →](docs/TEAMWORK.md)

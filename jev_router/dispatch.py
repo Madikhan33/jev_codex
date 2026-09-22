@@ -124,10 +124,10 @@ def plan_assignment(
         result.update(status="unavailable", unavailable_agent_type=agent_type)
         return result
     configured = catalog["profiles"][profile]
-    if configured["family"] == "astra" and not result["retained"] and not reasons:
+    if profile == "sol_xhigh" and not result["retained"] and not reasons:
         result.update(
             status="needs_evidence",
-            escalation_blocked="Explain why Luna/Sol cannot satisfy the task's constraints",
+            escalation_blocked="Explain the hard constraint, failed check or blocker requiring Sol xhigh",
         )
         return result
     result.update(

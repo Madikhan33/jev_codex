@@ -336,10 +336,10 @@
       ],
       "acceptable_profiles": {
         "architecture": [
-          "astra_low"
+          "sol_xhigh"
         ]
       },
-      "notes": "One declared hard invariant conflict after adequate prior analysis fits astra_low. Comparing existing evidence can be explain or investigate; rejecting both invalid alternatives is valid. This tests policy signals, not expert problem-solving performance.",
+      "notes": "One declared hard invariant conflict after adequate prior analysis fits sol_xhigh. Comparing existing evidence can be explain or investigate; rejecting both invalid alternatives is valid. This tests policy signals, not expert problem-solving performance.",
       "acceptable_intents": [
         "explain",
         "investigate"
@@ -355,10 +355,10 @@
       "expected_intent": "investigate",
       "acceptable_profiles": {
         "architecture": [
-          "astra_medium"
+          "sol_xhigh"
         ]
       },
-      "notes": "Several declared nonlocal decisions and adequate failed attempts meet astra_medium policy criteria. The fixture asserts evidence availability rather than supplying traces, so it tests routing policy signals, not expert problem-solving performance."
+      "notes": "Several declared nonlocal decisions and adequate failed attempts meet sol_xhigh policy criteria. The fixture asserts evidence availability rather than supplying traces, so it tests routing policy signals, not expert problem-solving performance."
     }
   ]
 }

@@ -13,7 +13,6 @@ from jev_router.catalog import (
     detection_questions,
     load_catalog,
     profile_questions,
-    validate_catalog,
 )
 from jev_router.hook import hook_result
 from jev_router.installer import agent_file
@@ -63,13 +62,11 @@ class RoutingTests(unittest.TestCase):
     def test_each_selected_profile_matches_registered_worker_model_and_effort(self):
         # This checks the classifier -> group -> installed agent contract, not model access.
         expected = {
-            "luna_xhigh": ("gpt-5.6-luna", "xhigh"),
-            "luna_max": ("gpt-5.6-luna", "max"),
-            "sol_medium": ("gpt-5.6-sol", "medium"),
-            "sol_high": ("gpt-5.6-sol", "high"),
-            "sol_xhigh": ("gpt-5.6-sol", "xhigh"),
-            "astra_low": ("gpt-6-astra", "low"),
-            "astra_medium": ("gpt-6-astra", "medium"),
+            "luna_xhigh": ("gpt-6-luna", "xhigh"),
+            "luna_max": ("gpt-6-luna", "max"),
+            "sol_medium": ("gpt-6-sol", "medium"),
+            "sol_high": ("gpt-6-sol", "high"),
+            "sol_xhigh": ("gpt-6-sol", "xhigh"),
         }
         for profile, (model, effort) in expected.items():
             with self.subTest(profile=profile):
@@ -151,7 +148,7 @@ class RoutingTests(unittest.TestCase):
         self.assertEqual(result["strategy"], "assign_specialist")
         self.assertEqual(result["uncertain"][0]["work_type"], "backend_api")
 
-    def test_missing_requirements_not_automatic_astra(self):
+    def test_missing_requirements_not_automatic_sol_xhigh(self):
         result = classify(
             "Add saving", FakeAPI({"frontend_api": 0.98}, {"frontend_api": "needs_context"})
         )
@@ -272,12 +269,6 @@ class RoutingTests(unittest.TestCase):
         result = classify("Implement an OS scheduler", FakeAPI(uncovered=0.95))
         self.assertTrue(result["review_required"])
 
-    def test_astra_high_rejected_in_configuration(self):
-        modified = copy.deepcopy(CATALOG)
-        modified["profiles"]["astra_low"]["effort"] = "high"
-        with self.assertRaises(ValueError):
-            validate_catalog(modified)
-
     def test_nonfinite_and_boolean_probabilities_rejected(self):
         for value in (float("nan"), float("inf"), -0.1, 1.1, True, "0.99"):
             with self.subTest(value=value), self.assertRaises(ValueError):
@@ -293,7 +284,7 @@ class RoutingTests(unittest.TestCase):
         def bad(state, questions):
             response = api(state, questions)
             if "profile.ui_style" in questions:
-                response["answers"]["profile.ui_style"]["choice"] = "astra_high"
+                response["answers"]["profile.ui_style"]["choice"] = "unknown_profile"
             return response
 
         with self.assertRaises(ValueError):

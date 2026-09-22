@@ -65,20 +65,18 @@ class DispatchTests(unittest.TestCase):
             **kwargs,
         )
 
-    def test_exact_mapping_all_seven_profiles(self):
+    def test_exact_mapping_all_five_profiles(self):
         expected = {
-            "luna_xhigh": ("gpt-5.6-luna", "xhigh"),
-            "luna_max": ("gpt-5.6-luna", "max"),
-            "sol_medium": ("gpt-5.6-sol", "medium"),
-            "sol_high": ("gpt-5.6-sol", "high"),
-            "sol_xhigh": ("gpt-5.6-sol", "xhigh"),
-            "astra_low": ("gpt-6-astra", "low"),
-            "astra_medium": ("gpt-6-astra", "medium"),
+            "luna_xhigh": ("gpt-6-luna", "xhigh"),
+            "luna_max": ("gpt-6-luna", "max"),
+            "sol_medium": ("gpt-6-sol", "medium"),
+            "sol_high": ("gpt-6-sol", "high"),
+            "sol_xhigh": ("gpt-6-sol", "xhigh"),
         }
         for profile, mapping in expected.items():
             with self.subTest(profile=profile):
                 evidence = ["new_constraints:Established conflicting cross-system invariants"]
-                plan = self.plan(profile, evidence=evidence if profile.startswith("astra") else [])
+                plan = self.plan(profile, evidence=evidence if profile == "sol_xhigh" else [])
                 self.assertEqual((plan["model"], plan["effort"]), mapping)
                 self.assertEqual(plan["agent_type"], f"jev_{profile}")
                 self.assertEqual(plan["status"], "recommendation")
@@ -87,18 +85,18 @@ class DispatchTests(unittest.TestCase):
     def test_missing_profile_and_unavailable_never_invent_fallback(self):
         self.assertEqual(self.plan(None)["status"], "needs_context")
         self.available = []
-        result = self.plan("astra_medium")
+        result = self.plan("sol_xhigh")
         self.assertEqual(result["status"], "unavailable")
         self.assertIsNone(result["model"])
 
-    def test_initial_astra_selection_needs_evidence_without_inventing_fallback(self):
-        result = self.plan("astra_low")
+    def test_initial_sol_xhigh_selection_needs_evidence_without_inventing_fallback(self):
+        result = self.plan("sol_xhigh")
         self.assertEqual(result["status"], "needs_evidence")
-        self.assertEqual(result["recommended_profile"], "astra_low")
+        self.assertEqual(result["recommended_profile"], "sol_xhigh")
         self.assertIsNone(result["model"])
         for invalid in (False, "", {}):
             with self.subTest(evidence=invalid), self.assertRaises(ValueError):
-                self.plan("astra_low", evidence=invalid)
+                self.plan("sol_xhigh", evidence=invalid)
 
     def test_selected_assignment_must_stop_before_replacement(self):
         previous = dict(self.plan("luna_xhigh"), status="selected")
@@ -133,9 +131,9 @@ class DispatchTests(unittest.TestCase):
     def test_related_assignment_retained_and_escalation_gated(self):
         old = dict(self.plan("sol_medium"), status="completed", agent_id="agent1")
         self.assertTrue(self.plan("luna_xhigh", existing=old)["retained"])
-        self.assertEqual(self.plan("astra_low", existing=old)["profile"], "sol_medium")
+        self.assertEqual(self.plan("sol_xhigh", existing=old)["profile"], "sol_medium")
         with self.assertRaises(ValueError):
-            self.plan("astra_low", existing=old, evidence=["user is dissatisfied"])
+            self.plan("sol_xhigh", existing=old, evidence=["user is dissatisfied"])
         evidence = ["failed_check:Concurrent edits reproducibly overwrite a newer revision"]
         self.assertEqual(
             self.plan("sol_high", existing=old, evidence=evidence)["profile"], "sol_high"

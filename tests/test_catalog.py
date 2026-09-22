@@ -66,7 +66,6 @@ class CatalogTests(unittest.TestCase):
         expected = {
             "luna": {"xhigh", "max"},
             "sol": {"medium", "high", "xhigh"},
-            "astra": {"low", "medium"},
         }
         catalog = load_catalog()
         for profile in catalog["profiles"].values():
@@ -74,7 +73,6 @@ class CatalogTests(unittest.TestCase):
         for name, invalid_effort in (
             ("luna_xhigh", "low"),
             ("sol_medium", "max"),
-            ("astra_low", "xhigh"),
         ):
             invalid = copy.deepcopy(catalog)
             invalid["profiles"][name]["effort"] = invalid_effort

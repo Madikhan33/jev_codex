@@ -463,55 +463,43 @@ Only accepted work types receive these Choice questions. The definitions are a c
 
 ### luna_xhigh
 
-Model: `gpt-5.6-luna`. Effort: `xhigh`. Merge rank: `10`.
+Model: `gpt-6-luna`. Effort: `xhigh`. Merge rank: `10`.
 
 Default Luna worker for specified mechanical changes, bounded implementation, tests, documentation edits or local investigation following an established pattern. Use even for one small edit when implementation is delegated. Keep scope concrete and verify the result. If hard interacting conditions or a proven blocker remain, use a higher profile.
 
 ### luna_max
 
-Model: `gpt-5.6-luna`. Effort: `max`. Merge rank: `20`.
+Model: `gpt-6-luna`. Effort: `max`. Merge rank: `20`.
 
 Bounded work with several specified, interacting conditions in an established solution pattern: validation truth tables, local state transitions or precise parser edge cases. The scope is narrow but requires sustained reasoning; do not use for new architecture or high-consequence decisions.
 
 ### sol_medium
 
-Model: `gpt-5.6-sol`. Effort: `medium`. Merge rank: `40`.
+Model: `gpt-6-sol`. Effort: `medium`. Merge rank: `40`.
 
 Ordinary feature or investigation needing local design choices across related parts: compose a responsive panel, design conventional CRUD, make a standard migration or integrate a fetch/save flow. Complexity alone is insufficient for Sol high; no established hard invariant.
 
 ### sol_high
 
-Model: `gpt-5.6-sol`. Effort: `high`. Merge rank: `50`.
+Model: `gpt-6-sol`. Effort: `high`. Merge rank: `50`.
 
 Established difficult constraint needing careful design or debugging: reproduced race, transaction integrity, authorization boundary, live-data safety or explicit compatibility invariant. A named technology, sensitive domain, urgent wording or vague complaint alone does not qualify.
 
 ### sol_xhigh
 
-Model: `gpt-5.6-sol`. Effort: `xhigh`. Merge rank: `55`.
+Model: `gpt-6-sol`. Effort: `xhigh`. Merge rank: `55`.
 
-Several evidenced hard constraints interact across a bounded feature or investigation, and Sol high has not resolved the conflict. Use for deep debugging or design with concrete traces and invariants; do not select merely for broad scope, urgency or missing requirements.
-
-### astra_low
-
-Model: `gpt-6-astra`. Effort: `low`. Merge rank: `60`.
-
-One bounded expert decision where evidenced hard invariants conflict or adequate lower-profile work exposed a technical blocker: assess two protocols against safety and recovery traces. Do not select for routine difficult coding, missing requirements, access or credentials.
-
-### astra_medium
-
-Model: `gpt-6-astra`. Effort: `medium`. Merge rank: `70`.
-
-Several coupled, nonlocal expert decisions across subsystems with explicit invariants and failure evidence, or a demonstrated systemic blocker after adequate lower-profile attempts. Cross-file or UI-plus-backend scope by itself does not qualify.
+Top expert escalation for one or more evidenced hard invariant conflicts, or a demonstrated systemic blocker after adequate lower-profile attempts. Require nonempty concrete evidence such as an invariant conflict, failed check or blocker; do not select for routine difficult coding, missing requirements, access, urgency or broad scope alone.
 
 ### needs_context
 
-Use only when a missing or conflicting requirement makes the profile materially indeterminate, such as one known constant versus an unspecified pricing redesign. First resolve short references from active context. Missing filenames, routine choices, absent credentials or an unexplained failure are not themselves reasons to select Astra.
+Use only when a missing or conflicting requirement makes the profile materially indeterminate, such as one known constant versus an unspecified pricing redesign. First resolve short references from active context. Missing filenames, routine choices, absent credentials or an unexplained failure are not themselves reasons to select Sol xhigh.
 
 ### Profile decision
 
 Which is the least intensive profile sufficient for this category's requested work?
 
-Select the least intensive sufficient profile from the current task and active context. Keep bounded known-pattern work on Luna, ordinary local design on Sol medium, evidenced hard constraints on Sol high. Astra requires a specific expert decision or systemic blocker supported by invariants, traces or adequate lower-profile attempts. Do not escalate for vague correction, size, urgency, product name or category label. For multiple changes in this category, cover the hardest established requirement.
+Select the least intensive sufficient profile from the current task and active context. Keep bounded known-pattern work on Luna, ordinary local design on Sol medium, evidenced hard constraints on Sol high, and the top expert escalation on Sol xhigh only with nonempty concrete evidence of an invariant conflict, failed check or blocker after adequate lower-profile attempts. Do not escalate for vague correction, size, urgency, product name or category label. For multiple changes in this category, cover the hardest established requirement.
 
 ## Request intent
 

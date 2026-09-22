@@ -55,7 +55,7 @@ failed check or blocker: `new_constraints:<detail>`, `failed_check:<detail>` or
 `blocker:<detail>`. These are reported facts, not validation by string prefix. Criticism
 or urgency alone is insufficient. Stop the old writer and record that fact before
 replacement. A concrete failed check can justify moving beyond a bounded profile; it does
-not prove that Astra is necessary.
+not by itself prove that Sol xhigh is necessary.
 
 Use `session record --session-id ID --project PATH` with stdin events for real assignments.
 Start with status `selected`, task_id, agent_type, profile, owner and selection_source.
@@ -101,5 +101,5 @@ agent IDs and statuses from the lead's live roster. The result may select
 `question`, `answer`, `contract`, `blocker` and `result`; contract changes and blockers
 notify the lead. Do not broadcast or poll.
 
-An initial Astra plan must include nonempty `validate_evidence` reasons. Do not silently
-fall back when that evidence is absent or the selected profile is unavailable.
+An initial Sol xhigh plan must include nonempty `validate_evidence` reasons. Do not
+silently fall back when that evidence is absent or the selected profile is unavailable.

@@ -39,7 +39,6 @@ LEGACY_PROFILES_SHA256 = "b1cdfd70766b951488742b20cba92a448d130fad7cdc5da288d34a
 EFFORTS_BY_FAMILY = {
     "luna": {"xhigh", "max"},
     "sol": {"medium", "high", "xhigh"},
-    "astra": {"low", "medium"},
 }
 
 

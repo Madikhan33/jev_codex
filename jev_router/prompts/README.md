@@ -5,7 +5,7 @@
 | Файл | Что определяет |
 | --- | --- |
 | [domains.toml](domains.toml) | UI, frontend, backend, БД, инфраструктура, AI, тесты, безопасность, архитектура, инструменты, документация |
-| [profiles.toml](profiles.toml) | Критерии выбора Luna / Sol / Astra и соответствующие model/effort |
+| [profiles.toml](profiles.toml) | Критерии выбора Luna / Sol и соответствующие model/effort |
 | [routing.toml](routing.toml) | Общие правила, намерение пользователя, возможность разделить работу, неизвестная работа и неопределённость профиля |
 | [../data/policy.toml](../data/policy.toml) | Числовые пороги, лимиты текста и таймауты — это настройки кода, не промпты |
 

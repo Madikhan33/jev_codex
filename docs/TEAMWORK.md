@@ -83,12 +83,12 @@ deliveries sent. Bodies are limited to 1200 characters and evidence to four shor
   measured token saving. Avoid extra workers for one edit and reuse the owner for related
   corrections. See [official subagent guidance](https://learn.chatgpt.com/docs/agent-configuration/subagents).
 - Prefer the smallest sufficient Luna profile for known patterns and Sol for local
-  design or evidenced difficult constraints. Unknown scope needs investigation, not Astra.
-- Before a new Astra selection, `session plan` requires a bounded evidence record such
-  as `blocker:<specific unresolved technical constraint>`. Evidence is caller-reported;
-  Python validates its structure, not the truth of the claim. A rejected Astra request
-  returns `needs_evidence`, with no invented lower model. The lead resolves scope and
-  selects a suitable available profile explicitly.
+  design or evidenced difficult constraints. Unknown scope needs investigation.
+- Before a new Sol xhigh selection, `session plan` requires a bounded evidence record
+  such as `blocker:<specific unresolved technical constraint>`. Evidence is
+  caller-reported; Python validates its structure, not the truth of the claim. A
+  rejected Sol xhigh request returns `needs_evidence`, with no invented lower model.
+  The lead resolves scope and selects a suitable available profile explicitly.
 - A selected, running or blocked assignment must stop before transfer. Ownership changes
   return `ownership_change_blocked` until the previous assignment stops or completes.
 
