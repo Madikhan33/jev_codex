@@ -154,7 +154,7 @@ class InstallerTests(unittest.TestCase):
         hooks = json.loads((self.home / "hooks.json").read_text())
         self.assertEqual(hooks["hooks"]["Stop"], self.initial["hooks"]["Stop"])
         self.assertEqual(hooks["hooks"]["UserPromptSubmit"][0]["hooks"], [self.foreign])
-        self.assertEqual(len(list((self.home / "agents").glob("*.toml"))), 7)
+        self.assertEqual(len(list((self.home / "agents").glob("*.toml"))), len(CATALOG["profiles"]))
         self.assertTrue((self.skills / "jev-router" / "SKILL.md").is_file())
 
     def test_reinstall_does_not_duplicate_hook(self):
