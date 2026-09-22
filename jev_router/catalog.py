@@ -36,6 +36,10 @@ PROMPTS = PACKAGE / "prompts"
 IDENTIFIER = re.compile(r"[a-z][a-z0-9_]*")
 MODEL_ID = re.compile(r"[a-zA-Z0-9._:/-]+")
 LEGACY_PROFILES_SHA256 = "b1cdfd70766b951488742b20cba92a448d130fad7cdc5da288d34a714553e6de"
+MODEL_BY_FAMILY = {
+    "luna": "gpt-6-luna",
+    "sol": "gpt-6-sol",
+}
 EFFORTS_BY_FAMILY = {
     "luna": {"xhigh", "max"},
     "sol": {"medium", "high", "xhigh"},
@@ -134,8 +138,8 @@ def validate_catalog(catalog: dict[str, Any]) -> None:
         family = profile.get("family")
         if family not in EFFORTS_BY_FAMILY:
             raise ValueError("Unknown model family")
-        if not MODEL_ID.fullmatch(profile["model"]):
-            raise ValueError("Invalid configured model ID")
+        if profile["model"] != MODEL_BY_FAMILY[family]:
+            raise ValueError(f"Configured model must be {MODEL_BY_FAMILY[family]} for {family}")
         if profile.get("effort") not in EFFORTS_BY_FAMILY[family]:
             raise ValueError(f"Unsupported effort for {family}: {profile.get('effort')}")
         if type(profile.get("rank")) is not int:

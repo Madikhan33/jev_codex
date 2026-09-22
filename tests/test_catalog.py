@@ -79,6 +79,44 @@ class CatalogTests(unittest.TestCase):
             with self.subTest(name=name), self.assertRaises(ValueError):
                 validate_catalog(invalid)
 
+    def test_profiles_require_the_model_for_their_family_and_allow_custom_criteria(self):
+        catalog = load_catalog()
+        self.assertEqual(
+            set(catalog["profiles"]),
+            {"luna_xhigh", "luna_max", "sol_medium", "sol_high", "sol_xhigh"},
+        )
+        expected_models = {"luna": "gpt-6-luna", "sol": "gpt-6-sol"}
+        for name, profile in catalog["profiles"].items():
+            self.assertEqual(profile["model"], expected_models[profile["family"]])
+            profile["criterion"] = f"Custom criterion for {name}"
+        validate_catalog(catalog)
+
+        invalid_models = {
+            "luna": ("gpt-5.6", "gpt-6-sol", "provider/custom-model"),
+            "sol": ("gpt-5.6", "gpt-6-luna", "provider/custom-model"),
+        }
+        for name, profile in catalog["profiles"].items():
+            for model in invalid_models[profile["family"]]:
+                invalid = copy.deepcopy(catalog)
+                invalid["profiles"][name]["model"] = model
+                with (
+                    self.subTest(name=name, model=model),
+                    self.assertRaisesRegex(ValueError, "Configured model must be"),
+                ):
+                    validate_catalog(invalid)
+
+    def test_installed_catalog_with_wrong_execution_model_is_rejected_on_load(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary) / "catalog"
+            install_catalog(directory)
+            profiles = directory / "profiles.toml"
+            original = profiles.read_bytes()
+            invalid = original.replace(b'model = "gpt-6-luna"', b'model = "gpt-5.6"', 1)
+            self.assertNotEqual(invalid, original)
+            profiles.write_bytes(invalid)
+            with self.assertRaisesRegex(ValueError, "Configured model must be"):
+                load_catalog(directory)
+
     def test_legacy_profile_migration_does_not_modify_hardlink_target(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary) / "catalog"

@@ -5,7 +5,7 @@
 ```text
 ~/.codex/jev-router/
   catalog/domains.toml     categories and boundary examples
-  catalog/profiles.toml    models, effort, criteria and merge rank
+  catalog/profiles.toml    fixed Luna/Sol models, effort, criteria and merge rank
   catalog/routing.toml     shared instructions and control questions
   catalog/policy.toml      thresholds, timeouts and input limits
   settings.json           enabled flag, catalog and credential paths
@@ -46,7 +46,7 @@ hook definition can require renewed trust in `/hooks` after restarting Codex.
 
 Rerun the installer to update the copied runtime and integrations. Keep the same installation paths; uninstall before relocating. Edited catalog files are preserved. An unchanged legacy `profiles.toml` migrates to the new Luna/Sol effort matrix automatically; a customized legacy file needs manual reconciliation before installation. Compare upstream `jev_router/prompts/` and `jev_router/data/policy.toml` with the installed catalog to adopt other new criteria deliberately. Legacy installations without `routing.toml` use bundled controls; reinstall adds the file for editing.
 
-Changes to model IDs or efforts require reinstalling to regenerate agent TOML files. Criteria changes apply on the next hook invocation. Restart Codex after integration updates and inspect `/hooks`; changed commands can require trust review again.
+The catalog accepts only `gpt-6-luna` for Luna profiles and `gpt-6-sol` for Sol profiles. Supported effort changes require reinstalling to regenerate agent TOML files. Criteria changes apply on the next hook invocation. Restart Codex after integration updates and inspect `/hooks`; changed commands can require trust review again.
 
 Locally edited managed skill/agent files or the Jev block at the start of global `AGENTS.md` cause a conflict instead of being overwritten. Other text in `AGENTS.md` is preserved byte-for-byte. Uninstall removes only the unchanged Jev block. A nonempty `AGENTS.override.md` takes precedence and makes the global rule inactive; `doctor` reports this warning.
 
@@ -122,7 +122,7 @@ for exact event and assignment fields.
 | Router unavailable warning | Run `run.py doctor`, then check key validity, quota and connectivity |
 | Key works only in a terminal | Save it with `configure`, or restart Codex with the environment inherited |
 | No subagents appear | Restart Codex, check global `AGENTS.md`, available tools, `[agents].enabled`, concurrency and model access |
-| Model unavailable | Edit installed `profiles.toml` with supported IDs and reinstall |
+| Model unavailable | Check account access to the configured GPT-6 Luna/Sol models; use an available profile or report that delegation is unavailable |
 | Reinstall reports conflict | Reconcile modified managed files without removing unrelated settings |
 | `enabled` rejected | Use JSON `false`, not the string `"false"` |
 
