@@ -162,7 +162,7 @@ class InstallerTests(unittest.TestCase):
         self.install()
         hooks = json.loads((self.home / "hooks.json").read_text())
         all_handlers = [h for g in hooks["hooks"]["UserPromptSubmit"] for h in g["hooks"]]
-        self.assertEqual(sum(h.get("statusMessage") == "Jev Router" for h in all_handlers), 1)
+        self.assertEqual(sum(h.get("statusMessage") == "jev-codex" for h in all_handlers), 1)
 
     def test_global_rule_activates_without_hook_metadata_and_uninstalls_cleanly(self):
         path = self.home / "AGENTS.md"

@@ -129,8 +129,8 @@ def load_hooks(path: Path) -> dict[str, Any]:
 
 def hook_definition(python: Path, entry: Path, settings: Path, timeout: float) -> dict[str, Any]:
     argv = [str(python), "-I", str(entry), "hook", "--config", str(settings)]
-    # Explicit PowerShell invocation works from either cmd.exe or PowerShell. All
-    # arguments are installer-generated paths; no submitted prompt enters the shell.
+    # PowerShell literal quoting keeps installer-generated paths safe across
+    # shells. Submitted prompt text is read from stdin and never enters this command.
     ps = "& " + " ".join("'" + arg.replace("'", "''") + "'" for arg in argv)
     encoded = base64.b64encode(ps.encode("utf-16-le")).decode("ascii")
     return {
@@ -138,7 +138,7 @@ def hook_definition(python: Path, entry: Path, settings: Path, timeout: float) -
         "command": shlex.join(argv),
         "commandWindows": "powershell.exe -NoProfile -NonInteractive -EncodedCommand " + encoded,
         "timeout": math.ceil(3 * timeout + 6),
-        "statusMessage": "Jev Router",
+        "statusMessage": "jev-codex",
         "additionalContextLimit": 1800,
     }
 
@@ -469,7 +469,10 @@ def install(home: Path, skills: Path, *, without_key: bool) -> None:
     register(home, skills, root, python, catalog)
     print(f"Installed. Editable prompts and policy: {catalog_dir}")
     print(f"Global routing rule: {home / 'AGENTS.md'}")
-    print("Restart Codex, then open /hooks and review/trust Jev Router.")
+    print(
+        "Restart Codex, then review/trust the UserPromptSubmit hook under user config in /hooks; "
+        "its status reads jev-codex while running."
+    )
     print("Model access and live Jev classification were not tested by installation.")
     command = [
         str(python),

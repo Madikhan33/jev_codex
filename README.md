@@ -49,12 +49,15 @@ directory, read the README and inspect the installer. Run install.py
 --without-key with Python 3.11+, preserving my existing settings.
 Check installation with run.py doctor. Show an absolute-path terminal
 command for run.py configure; do not ask for my key in chat.
-Explain restarting Codex and trusting Jev Router in /hooks.
+Explain restarting Codex and reviewing/trusting the UserPromptSubmit hook from
+~/.codex/hooks.json in /hooks; its status reads jev-codex while running.
 If setup is incomplete, state the remaining steps explicitly.
 ```
 
 Then **enter your key in the terminal**, **restart Codex**, and **review and trust
-Jev Router in `/hooks`**. You can now submit your usual coding tasks.
+`UserPromptSubmit` hook from `~/.codex/hooks.json` in `/hooks`**. The hook has
+no separate list name; `jev-codex` appears as its status while it runs.
+You can now submit your usual coding tasks.
 
 <details>
 <summary><strong>Prefer to install manually?</strong></summary>
