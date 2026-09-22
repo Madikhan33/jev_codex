@@ -45,7 +45,12 @@ def inspect_installation(
         checks["catalog_valid"] = False
 
     root = target.resolve().parent
-    checks.update(registered=False, integration_files_intact=False, hook_registered=False)
+    checks.update(
+        registered=False,
+        integration_files_intact=False,
+        hook_registered=False,
+        global_instructions_registered=False,
+    )
     warnings = []
     try:
         manifest = read_manifest(root)
@@ -59,6 +64,11 @@ def inspect_installation(
         checks["hook_registered"] = bool(manifest) and any(
             manifest["handler"] == handler for group in groups for handler in group.get("hooks", [])
         )
+        instructions = home / "AGENTS.md"
+        block = manifest.get("global_instructions_block") if manifest else None
+        if isinstance(block, str) and instructions.is_file() and not instructions.is_symlink():
+            content = instructions.read_bytes().removeprefix(b"\xef\xbb\xbf")
+            checks["global_instructions_registered"] = content.startswith(block.encode("utf-8"))
         warnings.extend(config_warnings(home))
     except (OSError, ValueError, KeyError, TypeError):
         warnings.append(
@@ -73,5 +83,6 @@ def inspect_installation(
         "registered",
         "integration_files_intact",
         "hook_registered",
+        "global_instructions_registered",
     )
     return checks, all(checks[name] for name in required) and not warnings

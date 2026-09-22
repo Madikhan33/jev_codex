@@ -61,8 +61,7 @@
       ],
       "acceptable_profiles": {
         "ui_style": [
-          "luna_low",
-          "luna_medium"
+          "luna_xhigh"
         ],
         "ui_layout": [
           "sol_medium"

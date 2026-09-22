@@ -156,8 +156,6 @@ def choose_strategy(
         return "single_agent"
     if not groups:
         return "resolve_scope"
-    if all(group["profile"] == "luna_low" for group in groups):
-        return "single_agent"
     if len(groups) > 1:
         if coordination["accepted"] and coordination["value"] == "separable":
             return "consider_delegation"

@@ -26,6 +26,21 @@ from .storage import digest as digest
 from .storage import json_bytes as json_bytes
 
 OWNER = "jev-codex-router-v3"
+GLOBAL_INSTRUCTIONS = (
+    b"<!-- Jev Router managed instructions: start -->\n"
+    b"For every software change request, use the installed $jev-router skill, even when "
+    b"JEV_ROUTE_V3 hook metadata is absent. Use the original request and local context "
+    b"to choose a bounded assignment. Delegate implementation to one available subagent "
+    b"with the smallest suitable Jev profile, including small edits; the lead "
+    b"owns scope, integration, checks and the final answer. Add parallel specialists "
+    b"only for independent work. If delegation is unavailable or a higher-priority "
+    b"instruction forbids it, continue safely and state the limitation. Never claim a "
+    b"worker model ran without an accepted spawn. An explicit user request to work "
+    b"directly takes precedence.\n"
+    b"<!-- Jev Router managed instructions: end -->\n\n"
+)
+GLOBAL_MARKER = b"<!-- Jev Router managed instructions: start -->"
+UTF8_BOM = b"\xef\xbb\xbf"
 AGENT_INSTRUCTIONS = (
     "Work as a specialist reporting to the parent team lead. Complete only the assigned "
     "task and preserve its acceptance criteria and original constraints. You are not alone "
@@ -164,6 +179,26 @@ def preflight(outputs: dict[Path, bytes], manifest: dict[str, Any]) -> None:
                 raise ValueError(f"Existing unowned or locally edited file preserved: {path}")
 
 
+def global_instruction_update(home: Path, manifest: dict[str, Any]) -> tuple[Path, bytes, bool]:
+    """Prepend a managed rule without changing the user's existing AGENTS.md bytes."""
+    path = home / "AGENTS.md"
+    if path.is_symlink():
+        raise ValueError(f"Refusing an existing symlink: {path}")
+    existed = path.exists()
+    current = path.read_bytes() if existed else b""
+    current.decode("utf-8-sig")
+    bom = UTF8_BOM if current.startswith(UTF8_BOM) else b""
+    body = current[len(bom) :]
+    previous = manifest.get("global_instructions_block")
+    if previous is not None:
+        if not isinstance(previous, str) or not body.startswith(previous.encode("utf-8")):
+            raise ValueError(f"Locally edited Jev instructions preserved: {path}")
+        body = body[len(previous.encode("utf-8")) :]
+    elif GLOBAL_MARKER in body:
+        raise ValueError(f"Existing unowned Jev instructions preserved: {path}")
+    return path, bom + GLOBAL_INSTRUCTIONS + body, existed
+
+
 def config_warnings(home: Path) -> list[str]:
     warnings = []
     for filename in ("config.toml", "requirements.toml"):
@@ -190,6 +225,9 @@ def config_warnings(home: Path) -> list[str]:
             warnings.append(
                 "Inline hooks also exist in config.toml. Review /hooks for duplicate routing hooks."
             )
+    override = home / "AGENTS.override.md"
+    if override.is_file() and override.stat().st_size:
+        warnings.append("AGENTS.override.md takes precedence over Jev's global AGENTS.md rule.")
     return warnings
 
 
@@ -201,6 +239,9 @@ def register(
     validate_locations(manifest, home, skills)
     outputs = managed_outputs(home, skills, catalog)
     preflight(outputs, manifest)
+    instructions_path, instructions, instructions_existed = global_instruction_update(
+        home, manifest
+    )
     hooks_path = home / "hooks.json"
     existing_hooks = load_hooks(hooks_path)
     check_modified_handler(existing_hooks, manifest.get("handler"))
@@ -218,16 +259,22 @@ def register(
         atomic_write(backup, original_hooks)
     snapshots = {p: p.read_bytes() if p.exists() else None for p in outputs}
     snapshots[hooks_path] = original_hooks
+    snapshots[instructions_path] = instructions_path.read_bytes() if instructions_existed else None
     try:
         for path, data in outputs.items():
             atomic_write(path, data)
         atomic_write(hooks_path, json_bytes(hooks))
+        atomic_write(instructions_path, instructions)
         updated = {
             "owner": OWNER,
             "codex_home": str(home),
             "skills_dir": str(skills),
             "files": {str(p): digest(data) for p, data in outputs.items()},
             "handler": handler,
+            "global_instructions_block": GLOBAL_INSTRUCTIONS.decode("utf-8"),
+            "global_instructions_file_existed": manifest.get(
+                "global_instructions_file_existed", instructions_existed
+            ),
             "original_hooks_existed": manifest.get(
                 "original_hooks_existed", original_hooks is not None
             ),
@@ -284,6 +331,27 @@ def uninstall(home: Path, root: Path) -> list[str]:
             messages.append(f"Preserved locally changed file: {path}")
         else:
             path.unlink()
+    instructions_path = home / "AGENTS.md"
+    previous = manifest.get("global_instructions_block")
+    if previous is not None:
+        if instructions_path.is_symlink() or not instructions_path.is_file():
+            messages.append(
+                f"Preserved missing or replaced global instructions: {instructions_path}"
+            )
+        else:
+            current = instructions_path.read_bytes()
+            bom = UTF8_BOM if current.startswith(UTF8_BOM) else b""
+            owned = previous.encode("utf-8")
+            if not current[len(bom) :].startswith(owned):
+                messages.append(
+                    f"Preserved locally changed global instructions: {instructions_path}"
+                )
+            else:
+                restored_content = bom + current[len(bom) + len(owned) :]
+                if not manifest.get("global_instructions_file_existed") and not restored_content:
+                    instructions_path.unlink()
+                else:
+                    atomic_write(instructions_path, restored_content)
     (root / "secrets.json").unlink(missing_ok=True)
     (root / "manifest.json").unlink(missing_ok=True)
     # Keep the private runtime/config for an inspectable rollback and avoid deleting
@@ -361,6 +429,7 @@ def install(home: Path, skills: Path, *, without_key: bool) -> None:
     manifest = read_manifest(root)
     validate_locations(manifest, home, skills)
     preflight(managed_outputs(home, skills, catalog), manifest)
+    global_instruction_update(home, manifest)
     hooks = load_hooks(home / "hooks.json")
     check_modified_handler(hooks, manifest.get("handler"))
     for warning in config_warnings(home):
@@ -399,6 +468,7 @@ def install(home: Path, skills: Path, *, without_key: bool) -> None:
         atomic_write(root / "secrets.json", json_bytes({"api_key": key}))
     register(home, skills, root, python, catalog)
     print(f"Installed. Editable prompts and policy: {catalog_dir}")
+    print(f"Global routing rule: {home / 'AGENTS.md'}")
     print("Restart Codex, then open /hooks and review/trust Jev Router.")
     print("Model access and live Jev classification were not tested by installation.")
     command = [
@@ -465,6 +535,7 @@ def main(argv: list[str] | None = None) -> int:
                 "runtime": str(root),
                 "skill": str(skills / "jev-router"),
                 "hook": str(home / "hooks.json"),
+                "global_instructions": str(home / "AGENTS.md"),
                 "will_modify_parent_model": False,
                 "will_bypass_hook_trust": False,
             }

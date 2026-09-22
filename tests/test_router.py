@@ -63,11 +63,11 @@ class RoutingTests(unittest.TestCase):
     def test_each_selected_profile_matches_registered_worker_model_and_effort(self):
         # This checks the classifier -> group -> installed agent contract, not model access.
         expected = {
-            "luna_low": ("gpt-5.6-luna", "low"),
-            "luna_medium": ("gpt-5.6-luna", "medium"),
-            "luna_high": ("gpt-5.6-luna", "high"),
+            "luna_xhigh": ("gpt-5.6-luna", "xhigh"),
+            "luna_max": ("gpt-5.6-luna", "max"),
             "sol_medium": ("gpt-5.6-sol", "medium"),
             "sol_high": ("gpt-5.6-sol", "high"),
+            "sol_xhigh": ("gpt-5.6-sol", "xhigh"),
             "astra_low": ("gpt-6-astra", "low"),
             "astra_medium": ("gpt-6-astra", "medium"),
         }
@@ -125,16 +125,16 @@ class RoutingTests(unittest.TestCase):
             self.assertNotIn(phrase, data)
 
     def test_only_selected_categories_get_profile_questions(self):
-        api = FakeAPI({"ui_style": 0.97}, {"ui_style": "luna_low"})
+        api = FakeAPI({"ui_style": 0.97}, {"ui_style": "luna_xhigh"})
         result = classify("Lighter background", api)
         self.assertEqual(len(api.calls[0][1]), 17)
         self.assertEqual(list(api.calls[1][1]), ["profile.ui_style"])
-        self.assertEqual(result["groups"][0]["profile"], "luna_low")
-        self.assertEqual(result["strategy"], "single_agent")
+        self.assertEqual(result["groups"][0]["profile"], "luna_xhigh")
+        self.assertEqual(result["strategy"], "assign_specialist")
 
     def test_top_k_does_not_drop_real_work(self):
         work = {"ui_style": 0.99, "ui_layout": 0.98, "frontend_api": 0.97, "backend_api": 0.96}
-        api = FakeAPI(work, {"ui_style": "luna_low"}, coordination="separable")
+        api = FakeAPI(work, {"ui_style": "luna_xhigh"}, coordination="separable")
         result = classify("Light background, working cards panel and its API", api, top_k=1)
         self.assertEqual(len(result["routes"]), 4)
         self.assertEqual(len(result["top_candidates"]), 1)
@@ -232,16 +232,16 @@ class RoutingTests(unittest.TestCase):
         self.assertTrue(result["review_required"])
         self.assertEqual(result["strategy"], "single_agent")
 
-    def test_multiple_mechanical_edits_do_not_need_team(self):
+    def test_multiple_mechanical_edits_get_scoped_owners(self):
         result = classify(
             "Correct two known constants",
             FakeAPI(
                 {"ui_style": 0.99, "backend_api": 0.99},
-                {"ui_style": "luna_low", "backend_api": "luna_low"},
+                {"ui_style": "luna_xhigh", "backend_api": "luna_xhigh"},
                 coordination="separable",
             ),
         )
-        self.assertEqual(result["strategy"], "single_agent")
+        self.assertEqual(result["strategy"], "consider_delegation")
 
     def test_absent_work_skips_second_call(self):
         api = FakeAPI(intent="non_software")
@@ -352,7 +352,7 @@ class HookTests(unittest.TestCase):
         )
 
     def test_only_prompt_sent_to_provider_and_key_not_echoed(self):
-        api = FakeAPI({"ui_style": 0.98}, {"ui_style": "luna_low"})
+        api = FakeAPI({"ui_style": 0.98}, {"ui_style": "luna_xhigh"})
 
         class Transport:
             def __init__(self, *a, **k):

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
 import math
 import re
-import shutil
 import tomllib
 from pathlib import Path
 from typing import Any, cast
@@ -28,12 +28,25 @@ from .questions import (
 from .questions import (
     profile_questions as profile_questions,
 )
+from .storage import atomic_write
 
 PACKAGE = Path(__file__).resolve().parent
 DATA = PACKAGE / "data"
 PROMPTS = PACKAGE / "prompts"
 IDENTIFIER = re.compile(r"[a-z][a-z0-9_]*")
 MODEL_ID = re.compile(r"[a-zA-Z0-9._:/-]+")
+LEGACY_PROFILES_SHA256 = "b1cdfd70766b951488742b20cba92a448d130fad7cdc5da288d34a714553e6de"
+EFFORTS_BY_FAMILY = {
+    "luna": {"xhigh", "max"},
+    "sol": {"medium", "high", "xhigh"},
+    "astra": {"low", "medium"},
+}
+
+
+def default_legacy_profiles(path: Path) -> bool:
+    return (
+        path.is_file() and hashlib.sha256(path.read_bytes()).hexdigest() == LEGACY_PROFILES_SHA256
+    )
 
 
 def read_toml(path: Path) -> dict[str, Any]:
@@ -52,9 +65,12 @@ def load_catalog(directory: Path | None = None) -> Catalog:
     routing_path = prompt_directory / "routing.toml"
     if not routing_path.exists():
         routing_path = PROMPTS / "routing.toml"
+    profile_path = prompt_directory / "profiles.toml"
+    if directory is not None and default_legacy_profiles(profile_path):
+        profile_path = PROMPTS / "profiles.toml"
     catalog = {
         "categories": read_toml(prompt_directory / "domains.toml")["categories"],
-        "profiles": read_toml(prompt_directory / "profiles.toml")["profiles"],
+        "profiles": read_toml(profile_path)["profiles"],
         "policy": read_toml(policy_directory / "policy.toml")["policy"],
         "routing": read_toml(routing_path),
     }
@@ -68,12 +84,14 @@ def install_catalog(directory: Path) -> None:
     directory.mkdir(parents=True, exist_ok=True)
     if is_new:
         for name in ("domains.toml", "profiles.toml"):
-            shutil.copyfile(PROMPTS / name, directory / name)
-        shutil.copyfile(DATA / "policy.toml", directory / "policy.toml")
+            atomic_write(directory / name, (PROMPTS / name).read_bytes())
+        atomic_write(directory / "policy.toml", (DATA / "policy.toml").read_bytes())
+    elif default_legacy_profiles(directory / "profiles.toml"):
+        atomic_write(directory / "profiles.toml", (PROMPTS / "profiles.toml").read_bytes())
     if not (directory / "routing.toml").exists():
-        shutil.copyfile(PROMPTS / "routing.toml", directory / "routing.toml")
+        atomic_write(directory / "routing.toml", (PROMPTS / "routing.toml").read_bytes())
     if not (directory / "context.toml").exists():
-        shutil.copyfile(PROMPTS / "context.toml", directory / "context.toml")
+        atomic_write(directory / "context.toml", (PROMPTS / "context.toml").read_bytes())
 
 
 def require_text(section: dict[str, Any], fields: tuple[str, ...], name: str) -> None:
@@ -114,15 +132,13 @@ def validate_catalog(catalog: dict[str, Any]) -> None:
         ):
             raise ValueError("Invalid profile definition")
         require_text(profile, ("model", "criterion"), name)
-        if profile.get("family") not in {"luna", "sol", "astra"}:
+        family = profile.get("family")
+        if family not in EFFORTS_BY_FAMILY:
             raise ValueError("Unknown model family")
         if not MODEL_ID.fullmatch(profile["model"]):
             raise ValueError("Invalid configured model ID")
-        if profile.get("effort") not in {"low", "medium", "high"}:
-            raise ValueError("Unsupported policy effort")
-        is_astra = profile["family"] == "astra" or "astra" in profile["model"].lower()
-        if is_astra and profile["effort"] not in {"low", "medium"}:
-            raise ValueError("Astra is restricted to low or medium")
+        if profile.get("effort") not in EFFORTS_BY_FAMILY[family]:
+            raise ValueError(f"Unsupported effort for {family}: {profile.get('effort')}")
         if type(profile.get("rank")) is not int:
             raise ValueError("Profile rank must be an integer")
 

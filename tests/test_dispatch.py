@@ -13,14 +13,14 @@ from jev_router.dispatch import (
 
 class DispatchTests(unittest.TestCase):
     def test_assignment_fields_survive_lifecycle_and_replanning(self):
-        selected = self.event(profile="luna_high", owner="interface")
+        selected = self.event(profile="luna_max", owner="interface")
         accepted = advance_dispatch(
             selected,
             self.event(
                 "dispatch_accepted", agent_id="worker1", tool_evidence="Spawn returned worker1"
             ),
         )
-        self.assertEqual(accepted["profile"], "luna_high")
+        self.assertEqual(accepted["profile"], "luna_max")
         plan = self.plan("sol_high", existing=accepted)
         self.assertTrue(plan["retained"])
         self.assertEqual(plan["agent_id"], "worker1")
@@ -28,15 +28,15 @@ class DispatchTests(unittest.TestCase):
     def test_available_agent_string_is_not_a_registry(self):
         with self.assertRaises(ValueError):
             plan_assignment(
-                {"owner": "interface", "profile": "luna_low"},
+                {"owner": "interface", "profile": "luna_xhigh"},
                 self.catalog,
-                "some_jev_luna_low_substring",
+                "some_jev_luna_xhigh_substring",
             )
 
     def test_null_followup_retains_known_same_task_worker(self):
         previous = self.event(
             "dispatch_accepted",
-            profile="luna_high",
+            profile="luna_max",
             owner="interface",
             agent_id="worker1",
             tool_evidence="Spawn returned worker1",
@@ -44,7 +44,7 @@ class DispatchTests(unittest.TestCase):
         result = self.plan(None, existing=previous)
         self.assertTrue(result["retained"])
         self.assertIsNone(result["recommended_profile"])
-        self.assertEqual(result["profile"], "luna_high")
+        self.assertEqual(result["profile"], "luna_max")
         self.assertEqual(result["agent_id"], "worker1")
 
     def setUp(self):
@@ -59,7 +59,7 @@ class DispatchTests(unittest.TestCase):
     def event(self, status="selected", **kwargs):
         return dict(
             task_id="task1",
-            agent_type="jev_luna_high",
+            agent_type="jev_luna_max",
             selection_source="jev",
             status=status,
             **kwargs,
@@ -67,11 +67,11 @@ class DispatchTests(unittest.TestCase):
 
     def test_exact_mapping_all_seven_profiles(self):
         expected = {
-            "luna_low": ("gpt-5.6-luna", "low"),
-            "luna_medium": ("gpt-5.6-luna", "medium"),
-            "luna_high": ("gpt-5.6-luna", "high"),
+            "luna_xhigh": ("gpt-5.6-luna", "xhigh"),
+            "luna_max": ("gpt-5.6-luna", "max"),
             "sol_medium": ("gpt-5.6-sol", "medium"),
             "sol_high": ("gpt-5.6-sol", "high"),
+            "sol_xhigh": ("gpt-5.6-sol", "xhigh"),
             "astra_low": ("gpt-6-astra", "low"),
             "astra_medium": ("gpt-6-astra", "medium"),
         }
@@ -101,24 +101,24 @@ class DispatchTests(unittest.TestCase):
                 self.plan("astra_low", evidence=invalid)
 
     def test_selected_assignment_must_stop_before_replacement(self):
-        previous = dict(self.plan("luna_medium"), status="selected")
+        previous = dict(self.plan("luna_xhigh"), status="selected")
         result = self.plan(
             "sol_high",
             existing=previous,
             evidence=["failed_check:Reproduced a stale response overwriting edits"],
         )
-        self.assertEqual(result["profile"], "luna_medium")
+        self.assertEqual(result["profile"], "luna_xhigh")
         self.assertEqual(result["escalation_blocked"], "stop_existing_first")
 
     def test_owner_transfer_is_explicit_and_requires_finished_assignment(self):
         previous = dict(self.plan("sol_medium"), status="dispatch_accepted", owner="server")
-        result = self.plan("luna_medium", existing=previous)
+        result = self.plan("luna_xhigh", existing=previous)
         self.assertEqual(result["status"], "ownership_change_blocked")
         self.assertIsNone(result["model"])
         previous["status"] = "stopped"
-        result = self.plan("luna_medium", existing=previous)
+        result = self.plan("luna_xhigh", existing=previous)
         self.assertEqual(result["owner"], "interface")
-        self.assertEqual(result["profile"], "luna_medium")
+        self.assertEqual(result["profile"], "luna_xhigh")
         self.assertFalse(result["retained"])
 
     def test_lead_selection_requires_provenance(self):
@@ -132,7 +132,7 @@ class DispatchTests(unittest.TestCase):
 
     def test_related_assignment_retained_and_escalation_gated(self):
         old = dict(self.plan("sol_medium"), status="completed", agent_id="agent1")
-        self.assertTrue(self.plan("luna_low", existing=old)["retained"])
+        self.assertTrue(self.plan("luna_xhigh", existing=old)["retained"])
         self.assertEqual(self.plan("astra_low", existing=old)["profile"], "sol_medium")
         with self.assertRaises(ValueError):
             self.plan("astra_low", existing=old, evidence=["user is dissatisfied"])
@@ -206,7 +206,7 @@ class DispatchTests(unittest.TestCase):
 
     def test_retained_assignment_keeps_selection_provenance(self):
         old = dict(self.plan("sol_medium"), selection_source="lead", status="completed")
-        self.assertEqual(self.plan("luna_low", existing=old)["selection_source"], "lead")
+        self.assertEqual(self.plan("luna_xhigh", existing=old)["selection_source"], "lead")
 
 
 if __name__ == "__main__":

@@ -31,14 +31,19 @@ directory instead of `git pull`.
 
 **Pulling code alone does not update Codex:** the installer must copy it into the
 installed runtime. Updates are manual; there is no background auto-update.
-Restart Codex afterward and review `/hooks` if the changed hook needs trust again.
+Restart Codex afterward so its global `AGENTS.md` rule and agent profiles reload;
+review `/hooks` if the changed hook needs trust again.
 Credentials, settings and edited catalog files are preserved; explicit context disable settings are
 preserved; missing context settings default to enabled.
 
-**Classifier prompts need attention:** reinstalling preserves the installed catalog,
-so new criteria in `jev_router/prompts/` do not overwrite existing files. Back up
+**Classifier prompts need attention:** reinstalling preserves edited catalog files.
+The unchanged older `profiles.toml` is migrated automatically to Luna xhigh/max,
+Sol medium/high/xhigh and Astra low/medium. A customized older file is kept and must
+be reconciled with those allowed efforts before installation can finish. Other new
+criteria in `jev_router/prompts/` do not overwrite existing files. Back up
 `~/.codex/jev-router/catalog` (Windows: `%USERPROFILE%\.codex\jev-router\catalog`),
 then compare and merge changed prompts and policy. Use your actual installation
 directory if customized. The Codex prompt above includes this step. If a managed
-skill or agent file was edited, the installer may stop to protect it: reconcile the
+skill, agent file or the managed block in global `AGENTS.md` was edited, the installer
+may stop to protect it: reconcile the
 reported conflict before retrying. Only published changes are available through GitHub.

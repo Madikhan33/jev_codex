@@ -461,23 +461,17 @@ Typo: mechanical. Guide from known sources: bounded. Substantial synthesis: feat
 
 Only accepted work types receive these Choice questions. The definitions are a configurable policy, not model benchmarking.
 
-### luna_low
+### luna_xhigh
 
-Model: `gpt-5.6-luna`. Effort: `low`. Merge rank: `10`.
+Model: `gpt-5.6-luna`. Effort: `xhigh`. Merge rank: `10`.
 
-One specified mechanical change or lookup with an obvious check: replace one color, fix a typo, set a known flag. If choosing behavior, tracing causes or coordinating edits is required, use a higher profile.
+Default Luna worker for specified mechanical changes, bounded implementation, tests, documentation edits or local investigation following an established pattern. Use even for one small edit when implementation is delegated. Keep scope concrete and verify the result. If hard interacting conditions or a proven blocker remain, use a higher profile.
 
-### luna_medium
+### luna_max
 
-Model: `gpt-5.6-luna`. Effort: `medium`. Merge rank: `20`.
+Model: `gpt-5.6-luna`. Effort: `max`. Merge rank: `20`.
 
-Bounded implementation or investigation following a known pattern: adapt one component, add one handler or test, bind a fixed API, trace a local cause. Several routine steps are fine; no open design tradeoff or established hard invariant.
-
-### luna_high
-
-Model: `gpt-5.6-luna`. Effort: `high`. Merge rank: `30`.
-
-Bounded work with multiple specified, interacting conditions in an established solution pattern: form validation truth table, local state transitions or a precise parser edge case. Careful reasoning is needed, but no new architecture or high-consequence operation.
+Bounded work with several specified, interacting conditions in an established solution pattern: validation truth tables, local state transitions or precise parser edge cases. The scope is narrow but requires sustained reasoning; do not use for new architecture or high-consequence decisions.
 
 ### sol_medium
 
@@ -490,6 +484,12 @@ Ordinary feature or investigation needing local design choices across related pa
 Model: `gpt-5.6-sol`. Effort: `high`. Merge rank: `50`.
 
 Established difficult constraint needing careful design or debugging: reproduced race, transaction integrity, authorization boundary, live-data safety or explicit compatibility invariant. A named technology, sensitive domain, urgent wording or vague complaint alone does not qualify.
+
+### sol_xhigh
+
+Model: `gpt-5.6-sol`. Effort: `xhigh`. Merge rank: `55`.
+
+Several evidenced hard constraints interact across a bounded feature or investigation, and Sol high has not resolved the conflict. Use for deep debugging or design with concrete traces and invariants; do not select merely for broad scope, urgency or missing requirements.
 
 ### astra_low
 

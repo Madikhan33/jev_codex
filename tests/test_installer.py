@@ -9,7 +9,13 @@ from pathlib import Path
 from unittest.mock import patch
 
 from jev_router.catalog import load_catalog
-from jev_router.installer import agent_file, hook_definition, register, uninstall
+from jev_router.installer import (
+    GLOBAL_INSTRUCTIONS,
+    agent_file,
+    hook_definition,
+    register,
+    uninstall,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG = load_catalog()
@@ -95,6 +101,31 @@ class InstallerTests(unittest.TestCase):
         self.assertFalse((self.skills / "jev-router" / "SKILL.md").exists())
         self.assertFalse((self.root / "manifest.json").exists())
 
+    def test_failed_global_instruction_write_rolls_back_hook_and_skill(self):
+        from jev_router.storage import atomic_write
+
+        instructions = self.home / "AGENTS.md"
+        original = b"# Existing instructions\n"
+        instructions.write_bytes(original)
+        failed = False
+
+        def fail_instructions(path, content, **kwargs):
+            nonlocal failed
+            if path == instructions and not failed:
+                failed = True
+                raise OSError("simulated global instruction write failure")
+            return atomic_write(path, content, **kwargs)
+
+        with (
+            patch("jev_router.installer.atomic_write", side_effect=fail_instructions),
+            self.assertRaises(OSError),
+        ):
+            self.install()
+        self.assertEqual(instructions.read_bytes(), original)
+        self.assertEqual(json.loads((self.home / "hooks.json").read_text()), self.initial)
+        self.assertFalse((self.skills / "jev-router" / "SKILL.md").exists())
+        self.assertFalse((self.root / "manifest.json").exists())
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="Jev test space ")
         self.base = Path(self.temp.name)
@@ -133,6 +164,48 @@ class InstallerTests(unittest.TestCase):
         all_handlers = [h for g in hooks["hooks"]["UserPromptSubmit"] for h in g["hooks"]]
         self.assertEqual(sum(h.get("statusMessage") == "Jev Router" for h in all_handlers), 1)
 
+    def test_global_rule_activates_without_hook_metadata_and_uninstalls_cleanly(self):
+        path = self.home / "AGENTS.md"
+        original = b"# Existing preferences\nKeep my project settings.\n"
+        path.write_bytes(original)
+        self.install()
+        self.assertEqual(path.read_bytes(), GLOBAL_INSTRUCTIONS + original)
+        self.install()
+        self.assertEqual(path.read_bytes(), GLOBAL_INSTRUCTIONS + original)
+        uninstall(self.home, self.root)
+        self.assertEqual(path.read_bytes(), original)
+
+    def test_global_rule_created_and_removed_when_no_agents_file_exists(self):
+        path = self.home / "AGENTS.md"
+        self.install()
+        self.assertEqual(path.read_bytes(), GLOBAL_INSTRUCTIONS)
+        uninstall(self.home, self.root)
+        self.assertFalse(path.exists())
+
+    def test_global_rule_preserves_local_edits(self):
+        path = self.home / "AGENTS.md"
+        self.install()
+        path.write_text("user changed rule\n", encoding="utf-8")
+        with self.assertRaises(ValueError):
+            self.install()
+        messages = uninstall(self.home, self.root)
+        self.assertEqual(path.read_text(encoding="utf-8"), "user changed rule\n")
+        self.assertTrue(any("global instructions" in message for message in messages))
+
+    def test_global_rule_preserves_utf8_bom_and_override_is_reported(self):
+        from jev_router.installer import config_warnings
+
+        path = self.home / "AGENTS.md"
+        path.write_bytes(b"\xef\xbb\xbf# User instruction\r\n")
+        (self.home / "AGENTS.override.md").write_text("temporary override", encoding="utf-8")
+        self.install()
+        self.assertEqual(
+            path.read_bytes(), b"\xef\xbb\xbf" + GLOBAL_INSTRUCTIONS + b"# User instruction\r\n"
+        )
+        self.assertTrue(any("override" in warning for warning in config_warnings(self.home)))
+        uninstall(self.home, self.root)
+        self.assertEqual(path.read_bytes(), b"\xef\xbb\xbf# User instruction\r\n")
+
     def test_uninstall_removes_only_owned_integration(self):
         self.install()
         uninstall(self.home, self.root)
@@ -142,7 +215,7 @@ class InstallerTests(unittest.TestCase):
 
     def test_uninstall_preserves_locally_edited_file(self):
         self.install()
-        target = self.home / "agents" / "jev_luna_low.toml"
+        target = self.home / "agents" / "jev_luna_xhigh.toml"
         target.write_text("# a local customization\n", encoding="utf-8")
         messages = uninstall(self.home, self.root)
         self.assertTrue(target.exists())

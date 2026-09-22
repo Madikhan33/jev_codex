@@ -28,7 +28,7 @@ def capsule():
 
 class ContextAPI(FakeAPI):
     def __init__(self, relation="correct", mass=0.94):
-        super().__init__({"ui_style": 0.99}, {"ui_style": "luna_low"})
+        super().__init__({"ui_style": 0.99}, {"ui_style": "luna_xhigh"})
         self.relation = relation
         self.mass = mass
         self.context_calls = []
@@ -82,7 +82,7 @@ class ContextualTests(unittest.TestCase):
         self.assertEqual(len(api.context_calls), 3)
         self.assertTrue(result["context_used"])
         self.assertIn("#ffffff", api.calls[0][0]["context"])
-        self.assertEqual(result["result"]["groups"][0]["profile"], "luna_low")
+        self.assertEqual(result["result"]["groups"][0]["profile"], "luna_xhigh")
 
     def test_new_task_drops_old_context_before_category_and_profile_selection(self):
         api = ContextAPI("new_task")

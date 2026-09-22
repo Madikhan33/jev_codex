@@ -141,11 +141,11 @@ class EvaluationTests(unittest.TestCase):
             "prompt": "Исправь это",
             "context": "Only change background to #fff",
             "categories": ["ui_style"],
-            "acceptable_profiles": {"ui_style": ["luna_low"]},
-            "acceptable_strategies": ["single_agent"],
+            "acceptable_profiles": {"ui_style": ["luna_xhigh"]},
+            "acceptable_strategies": ["assign_specialist"],
             "expected_review_required": False,
         }
-        api = FakeAPI({"ui_style": 0.99}, {"ui_style": "luna_low"})
+        api = FakeAPI({"ui_style": 0.99}, {"ui_style": "luna_xhigh"})
         report = evaluate_cases([case], api, load_catalog())
         self.assertEqual([call[0]["context"] for call in api.calls], [case["context"]] * 2)
         self.assertEqual(report["strategy_accuracy"], 1)

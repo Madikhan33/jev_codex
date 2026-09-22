@@ -78,8 +78,10 @@ deliveries sent. Bodies are limited to 1200 characters and evidence to four shor
 - Use scoped fresh worker context, acceptance checks and file references rather than a
   copied conversation, whole source files or the classifier catalog.
 - Reuse the existing worker for corrections; do not spawn a fresh team per message.
-- Keep trivial work in the lead. More agents are not inherently cheaper: each consumes
-  its own context and tool calls. See [official subagent guidance](https://learn.chatgpt.com/docs/agent-configuration/subagents).
+- Give even a trivial software edit to one scoped worker; the lead verifies its result.
+  A worker consumes context and tool calls, so this is an ownership preference, not a
+  measured token saving. Avoid extra workers for one edit and reuse the owner for related
+  corrections. See [official subagent guidance](https://learn.chatgpt.com/docs/agent-configuration/subagents).
 - Prefer the smallest sufficient Luna profile for known patterns and Sol for local
   design or evidenced difficult constraints. Unknown scope needs investigation, not Astra.
 - Before a new Astra selection, `session plan` requires a bounded evidence record such

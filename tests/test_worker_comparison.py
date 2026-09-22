@@ -7,7 +7,7 @@ def trial(**changes):
     return (
         dict(
             task_id="mechanical_edit",
-            profile="luna_low",
+            profile="luna_xhigh",
             status="completed",
             checks_passed=True,
             elapsed_ms=100,

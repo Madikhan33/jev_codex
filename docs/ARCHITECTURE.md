@@ -61,16 +61,15 @@ Routing separates task assignment from permission to work in parallel:
 | Intent is unclear/unaccepted | `resolve_scope` |
 | Accepted explanation/non-software intent | `single_agent` |
 | No work groups for remaining intents | `resolve_scope` |
-| Every group has `luna_low` | `single_agent` |
-| One nontrivial group | `assign_specialist` |
+| One group, including `luna_xhigh` | `assign_specialist` |
 | Multiple groups and accepted separable coordination | `consider_delegation` |
 | Other multiple-group routes | `coordinate_team` |
 
 Conditions above are evaluated in order. The compact v3 route adds `coordination`; unaccepted intent and coordination are exposed as `unclear`. `review_required` remains a request to review the routing recommendation. It is not a global execution gate, an independent code-review requirement or permission to discard user requirements. Uncertain categories and missing profiles remain visible without blocking clear work.
 
-A single specialist is useful when the assignment is substantial and the lead has useful independent integration or acceptance work. Trivial edits do not need workers. With several groups, the lead resolves shared contracts and dependency order before parallel edits, gives each worker explicit ownership, and waits for prerequisites where necessary. A `coordinate_team` route does not imply all tasks can start at once.
+For confirmed software changes, the lead assigns implementation to at least one scoped worker, including one mechanical edit. The lead owns the original request, integration, checks and final response; it can wait when no independent work is useful. With several groups, the lead resolves shared contracts and dependency order before parallel edits, gives each worker explicit ownership, and waits for prerequisites where necessary. A `coordinate_team` route does not imply all tasks can start at once. Explanations and non-software requests stay local.
 
-When a profile is missing, the lead resolves it from local context and available profiles and labels the choice as its own. Neither the hook nor the classifier verifies account model access or changes the parent model. Runtime tools, available profiles and concurrency limits determine which assignments can actually run; unavailable delegation must be reported honestly.
+When a profile is missing or hook metadata is unavailable, the lead resolves a worker profile from local context and available profiles and labels the choice as its own. Neither the hook nor the classifier verifies account model access or changes the parent model. Runtime tools, available profiles and concurrency limits determine which assignments can actually run; unavailable delegation must be reported honestly.
 
 Offline routing tests can validate strategy selection and metadata. They do not establish live classification accuracy, actual model availability, or end-to-end team behavior in Codex.
 

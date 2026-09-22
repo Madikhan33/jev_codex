@@ -24,7 +24,7 @@ an execution profile and gives the lead agent a workflow for assigning and check
 | --- | --- |
 | **Automatic routing** | A `UserPromptSubmit` hook classifies requests with Jev by TypeSafe. |
 | **Context for follow-ups** | Task summaries maintained by the skill help interpret “fix this” without importing the entire conversation. |
-| **Scoped delegation** | Workers receive ownership, constraints and acceptance checks; related corrections reuse their owner. |
+| **Scoped delegation** | Every confirmed software change, including a small edit, goes to at least one scoped worker; the lead checks and integrates the result. |
 | **Luna / Sol first** | Editable criteria prefer the smallest sufficient profile; a new Astra assignment needs explicit evidence in the planner. |
 | **Research when needed** | The skill guides Codex to project files, public sources or a user clarification, depending on the missing fact. |
 | **Peer coordination** | Workers exchange focused questions and findings using available host tools, with a lead-relay fallback. |
@@ -79,8 +79,10 @@ python3 run.py doctor
 ```
 
 The installer creates a private Python environment, installs the SDK, registers the
-skill, creates seven agent profiles and merges the hook. Existing unrelated settings
-are preserved. Restart Codex and review `/hooks` after installation.
+skill, creates seven agent profiles, merges the hook and prepends a removable Jev rule
+to your global `~/.codex/AGENTS.md`. Existing instructions and settings are preserved.
+Restart Codex and review `/hooks` after installation. The global rule asks Codex to
+use the skill for software edits even when the hook produces no route.
 
 The GitHub commands install published source. For an unpublished local checkout,
 run the installer there. No PyPI release is required.
@@ -111,24 +113,26 @@ flowchart LR
     C[Saved task summary] -.-> B
     B --> D[Validated routing hints]
     D --> E[Codex lead]
-    E --> F[Direct work or scoped specialists]
+    E --> F[Scoped implementation worker]
     F --> G[Integration and checks]
 ```
 
 Jev identifies work categories and recommends profiles. Python validates the output
 and groups related work. The Codex lead uses the original request, project context
-and skill instructions to decide assignments. **The hook does not launch agents or
-switch the parent model.** Research and messages run through the host's actual tools.
+and skill instructions to assign confirmed software changes to scoped workers.
+The skill also guides that assignment when hook metadata is missing, using a profile
+chosen by the lead from available host capabilities. **The hook does not launch agents
+or switch the parent model.** Research and messages run through the host's actual tools.
 
 For example, a request to build a panel and its API may have an interface owner and a
 server owner. They agree on the API contract, exchange necessary findings and return
-checks for integration. A small color change can stay with the lead. This is an
-illustration, not a fixed team or guaranteed classifier output.
+checks for integration. A small color change goes to one Luna worker when that profile
+is available. This is an illustration, not a fixed team or guaranteed classifier output.
 
 | Profile family | Intended use | Effort presets |
 | --- | --- | --- |
-| **Luna** | Specified changes and bounded work following known patterns | low, medium, high |
-| **Sol** | Local design choices and evidenced difficult implementation constraints | medium, high |
+| **Luna** | Specified changes and bounded work following known patterns | xhigh, max |
+| **Sol** | Local design choices and evidenced difficult implementation constraints | medium, high, xhigh |
 | **Astra** | Established expert decisions or technical blockers requiring escalation | low, medium |
 
 Profiles are configurable policy presets, not benchmark rankings. A vague prompt or
@@ -170,8 +174,9 @@ and [context](jev_router/prompts/context.toml). `doctor` and prompt previews are
 `doctor` does not verify the key online, hook trust or account model access.
 
 To remove the integration, run `py -3 install.py --uninstall`. It removes the hook,
-unchanged managed skill/agent files and saved key, while preserving unrelated or edited
-files and the private runtime. [Full configuration reference →](docs/CONFIGURATION.md)
+unchanged managed skill/agent files, the unchanged global Jev rule and saved key,
+while preserving unrelated or edited files and the private runtime.
+[Full configuration reference →](docs/CONFIGURATION.md)
 
 ## Documentation
 

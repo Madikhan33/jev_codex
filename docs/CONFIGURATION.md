@@ -14,6 +14,7 @@
   app/                    installed package copy
   manifest.json           managed file hashes and exact hook handler
 ~/.codex/agents/jev_*.toml
+~/.codex/AGENTS.md       managed default-on routing rule; existing text preserved
 ~/.agents/skills/jev-router/SKILL.md
 ```
 
@@ -43,11 +44,11 @@ Use the same custom installation flags as before. Credentials and settings are r
 an explicit context disable setting is retained; absent settings default to enabled. The default hook timeout is now 21 seconds, so the changed
 hook definition can require renewed trust in `/hooks` after restarting Codex.
 
-Rerun the installer to update the copied runtime and integrations. Keep the same installation paths; uninstall before relocating. Installed catalog changes are preserved. Compare upstream `jev_router/prompts/` and `jev_router/data/policy.toml` with the installed catalog to adopt new criteria deliberately. Legacy installations without `routing.toml` use bundled controls; reinstall adds the file for editing.
+Rerun the installer to update the copied runtime and integrations. Keep the same installation paths; uninstall before relocating. Edited catalog files are preserved. An unchanged legacy `profiles.toml` migrates to the new Luna/Sol effort matrix automatically; a customized legacy file needs manual reconciliation before installation. Compare upstream `jev_router/prompts/` and `jev_router/data/policy.toml` with the installed catalog to adopt other new criteria deliberately. Legacy installations without `routing.toml` use bundled controls; reinstall adds the file for editing.
 
 Changes to model IDs or efforts require reinstalling to regenerate agent TOML files. Criteria changes apply on the next hook invocation. Restart Codex after integration updates and inspect `/hooks`; changed commands can require trust review again.
 
-Locally edited managed skill/agent files cause a conflict instead of being overwritten. Reconcile them with the source template. Uninstall also preserves changed files.
+Locally edited managed skill/agent files or the Jev block at the start of global `AGENTS.md` cause a conflict instead of being overwritten. Other text in `AGENTS.md` is preserved byte-for-byte. Uninstall removes only the unchanged Jev block. A nonempty `AGENTS.override.md` takes precedence and makes the global rule inactive; `doctor` reports this warning.
 
 ## Standalone use
 
@@ -120,7 +121,7 @@ for exact event and assignment fields.
 | Hook does not run | Restart Codex; inspect `/hooks` for trust/enabled state and managed policies |
 | Router unavailable warning | Run `run.py doctor`, then check key validity, quota and connectivity |
 | Key works only in a terminal | Save it with `configure`, or restart Codex with the environment inherited |
-| No subagents appear | Check separability, available tools, `[agents].enabled`, concurrency and model access |
+| No subagents appear | Restart Codex, check global `AGENTS.md`, available tools, `[agents].enabled`, concurrency and model access |
 | Model unavailable | Edit installed `profiles.toml` with supported IDs and reinstall |
 | Reinstall reports conflict | Reconcile modified managed files without removing unrelated settings |
 | `enabled` rejected | Use JSON `false`, not the string `"false"` |

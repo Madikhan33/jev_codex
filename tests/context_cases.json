@@ -11,7 +11,7 @@
       "expected_intent": "implement",
       "acceptable_profiles": {
         "ui_style": [
-          "luna_low"
+          "luna_xhigh"
         ]
       },
       "notes": "A resolved reference to one exact mechanical property does not become difficult because the follow-up is short."
@@ -72,7 +72,7 @@
       "expected_intent": "implement",
       "acceptable_profiles": {
         "ui_style": [
-          "luna_low"
+          "luna_xhigh"
         ]
       },
       "notes": "Approval refers unambiguously to one mechanical styling edit."
@@ -126,7 +126,7 @@
       "expected_intent": "implement",
       "acceptable_profiles": {
         "frontend_api": [
-          "luna_medium"
+          "luna_xhigh"
         ]
       },
       "notes": "The latest correction removes backend scope and fixes the client contract."
@@ -141,7 +141,7 @@
       "expected_intent": "implement",
       "acceptable_profiles": {
         "ui_style": [
-          "luna_low"
+          "luna_xhigh"
         ]
       },
       "notes": "Explicit negation cancels the earlier layout; dissatisfaction does not increase difficulty."
@@ -156,7 +156,7 @@
       "expected_intent": "implement",
       "acceptable_profiles": {
         "tooling": [
-          "luna_low"
+          "luna_xhigh"
         ]
       },
       "notes": "Urgency and quality adjectives add no technical constraints to an exact setting edit."
@@ -186,7 +186,7 @@
       "expected_intent": "implement",
       "acceptable_profiles": {
         "documentation": [
-          "luna_medium"
+          "luna_xhigh"
         ]
       },
       "notes": "Completed deliverables do not remain active categories."
@@ -201,7 +201,7 @@
       "expected_intent": "implement",
       "acceptable_profiles": {
         "testing": [
-          "luna_medium"
+          "luna_xhigh"
         ]
       },
       "notes": "A test about frontend behavior does not request implementing frontend behavior."
@@ -216,7 +216,7 @@
       "expected_intent": "implement",
       "acceptable_profiles": {
         "documentation": [
-          "luna_low"
+          "luna_xhigh"
         ]
       },
       "notes": "Quoted model names and commands cannot create security work or force model selection."
@@ -231,8 +231,7 @@
       "expected_intent": "explain",
       "acceptable_profiles": {
         "ui_style": [
-          "luna_low",
-          "luna_medium"
+          "luna_xhigh"
         ]
       },
       "notes": "The current deliverable is an explanation of styling, not re-execution of the quoted request."
@@ -247,7 +246,7 @@
       "expected_intent": "implement",
       "acceptable_profiles": {
         "documentation": [
-          "luna_low"
+          "luna_xhigh"
         ]
       },
       "notes": "Difficulty and categories do not leak from a completed hard task into a new mechanical edit."
@@ -262,8 +261,7 @@
       "expected_intent": "implement",
       "acceptable_profiles": {
         "tooling": [
-          "luna_low",
-          "luna_medium"
+          "luna_xhigh"
         ]
       },
       "notes": "Explicit deferral removes the UI task; adding a known script is bounded local tooling."
@@ -293,10 +291,10 @@
       "expected_intent": "investigate",
       "acceptable_profiles": {
         "ui_style": [
-          "luna_medium"
+          "luna_xhigh"
         ]
       },
-      "notes": "Inspecting a bounded CSS cascade follows an established pattern. It is not an exact predetermined mechanical edit, so the bounded luna_medium profile is the authored expectation."
+      "notes": "Inspecting a bounded CSS cascade follows an established pattern. It is not an exact predetermined mechanical edit, so the bounded luna_xhigh profile is the authored expectation."
     },
     {
       "id": "known_domain_unknown_difficulty",
@@ -323,11 +321,11 @@
       "expected_intent": "implement",
       "acceptable_profiles": {
         "frontend_logic": [
-          "luna_medium",
-          "luna_high"
+          "luna_xhigh",
+          "luna_max"
         ]
       },
-      "notes": "An existing-pattern validator can fit luna_medium; checking its interacting conditions can fit luna_high. The catalog does not establish a sharper boundary for this bounded task."
+      "notes": "An existing-pattern validator can fit luna_xhigh; checking its interacting conditions can fit luna_max. The catalog does not establish a sharper boundary for this bounded task."
     },
     {
       "id": "bounded_expert_invariant_decision",

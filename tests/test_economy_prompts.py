@@ -28,11 +28,11 @@ class EconomyPromptTests(unittest.TestCase):
         }
         self.assertTrue(
             {
-                "luna_low",
-                "luna_medium",
-                "luna_high",
+                "luna_xhigh",
+                "luna_max",
                 "sol_medium",
                 "sol_high",
+                "sol_xhigh",
                 "astra_low",
                 "astra_medium",
                 None,
